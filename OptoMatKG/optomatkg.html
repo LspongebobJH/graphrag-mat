@@ -1,0 +1,1128 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>OptoMatKG: A Traceable Knowledge Graph Framework</title><style>
+body{margin:0;background:#eef1f4;color:#20252b;font:16px/1.6 Georgia,serif}
+.document{max-width:960px;margin:32px auto}
+.header,.page{background:#fff;box-shadow:0 2px 10px #0001}
+.header{padding:32px 48px;margin-bottom:24px}
+.header h1{margin:0 0 12px;font:700 30px/1.2 system-ui,sans-serif}
+.header p{margin:6px 0;color:#58636e}.header a{color:#245f9e}
+.toc{font:14px system-ui,sans-serif}.toc a{color:#245f9e;text-decoration:none;margin-right:14px}
+.page{margin:0 0 24px;padding:36px 48px}.page h2{margin:0 0 16px;font:600 15px system-ui,sans-serif;color:#65717d;border-bottom:1px solid #d9dee3;padding-bottom:8px}
+.page pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:15px/1.6 Georgia,serif}
+@media(max-width:700px){.document{margin:0}.header,.page{padding:24px 18px;margin-bottom:12px}.header h1{font-size:24px}.page pre{font-size:14px}}
+</style></head><body><main class='document'><header class='header'><h1>OptoMatKG: A Traceable Knowledge Graph Framework with Semantic Retrieval for Optoelectronic Materials Science</h1><p><strong>Ben Ni and Lei Zhang</strong></p><p>Preprint, 4 September 2026 · DOI: <a href='https://doi.org/10.26434/chemrxiv.15008315/v1'>10.26434/chemrxiv.15008315/v1</a></p><p><a href='../OptoMatKG/chemrxiv.15008315_v1.pdf'>Open the original PDF</a></p><nav class='toc' aria-label='Page navigation'><a href='#page-1'>Page 1</a> <a href='#page-2'>Page 2</a> <a href='#page-3'>Page 3</a> <a href='#page-4'>Page 4</a> <a href='#page-5'>Page 5</a> <a href='#page-6'>Page 6</a> <a href='#page-7'>Page 7</a> <a href='#page-8'>Page 8</a> <a href='#page-9'>Page 9</a> <a href='#page-10'>Page 10</a> <a href='#page-11'>Page 11</a> <a href='#page-12'>Page 12</a> <a href='#page-13'>Page 13</a> <a href='#page-14'>Page 14</a> <a href='#page-15'>Page 15</a> <a href='#page-16'>Page 16</a> <a href='#page-17'>Page 17</a> <a href='#page-18'>Page 18</a> <a href='#page-19'>Page 19</a> <a href='#page-20'>Page 20</a> <a href='#page-21'>Page 21</a> <a href='#page-22'>Page 22</a></nav></header><section class='page' id='page-1'><h2>Page 1</h2><pre>4 September 2026
+OptoMatKG: A Traceable Knowledge Graph
+Framework with Semantic Retrieval for
+Optoelectronic Materials Science
+Ben Ni, Lei Zhang
+Abstract
+Extracting and correlating knowledge from heterogeneous scientiﬁc publications poses a
+fundamental data engineering challenge for data-driven materials discovery. Traditional keyword
+search lacks semantic depth, while generic large language models (LLMs) are prone to hallucinated
+predictions. To address these limitations, we present OptoMatKG, a literature-scale data engineering
+system whose core contributions are threefold: (1) a domain-speciﬁc knowledge graph construction
+pipeline based on a nine-category fullworkﬂow ontology; the resulting graph comprises 2.62
+million entities and 3.38 million typed relations; (2) a cascaded multi-stage retrieval pipeline
+that synergistically integrates LLM-based query normalization, semantic vector indexing and
+Materials Project pre-ﬁltering to enhance metric-aware candidate ranking; and (3) an evidence-
+constrained auditing module that forces every output to anchor to DOI-supported reasoning
+chains, thereby enforcing end-to-end hallucination prevention. Using optoelectronic inverse design
+as a validation testbed, experiments verify that our entity extractor reaches a micro-averaged
+F1 of 0.971. Comprehensive tests over 2000 real-world queries further demonstrate that our
+system surpasses keyword-based and singlestage baselines in Recall@K and metric coverage. The
+system accurately quantiﬁes multi-objective performance trade-oﬀs while ensuring fully traceable
+inference. Although validated on photodetectors, the proposed solution provides a generalizable,
+pluggable engineering framework readily extendable to other functional material discovery
+pipelines.
+Keywords
+Domain knowledge graph, Semantic retrieval, Large Language Model, Multi-objective screening,
+Optoelectronic materials
+Posted on 4 September 2026 — CC-BY 4.0 — This is a preprint and has not been peer reviewed. Data may be preliminary. — https://
+doi.org/10.26434/chemrxiv.15008315/v1</pre></section><section class='page' id='page-2'><h2>Page 2</h2><pre>1 
+ 
+OptoMatKG: A Traceable Knowledge Graph Framework 
+with Semantic Retrieval for Optoelectronic Materials 
+Science 
+ 
+Ben Ni,ab and Lei Zhangab* 
+ 
+a Key Laboratory of Spectral Imaging Technology, Xi’an Institute of Optics and Precision Mechanics of the Chinese 
+Academy of Sciences, Xi’an 710119, China. E-mail: zhanglei1@opt.ac.cn 
+b Department of Internet Engineering, School of Software, Nanjing University of Information Science &amp; Technology, 
+210044, Nanjing, China.  
+ 
+Keywords Domain knowledge graph; Semantic retrieval; Large Language Model; Multi-objective screening; 
+Optoelectronic materials</pre></section><section class='page' id='page-3'><h2>Page 3</h2><pre>2 
+Abstract 
+Extracting and correlating knowledge from heterogeneous scientific publications poses a fundamental data 
+engineering challenge for data-driven materials discovery. Traditional keyword search lacks semantic depth, 
+while generic large language models (LLMs) are prone to hallucinated predictions. To address these 
+limitations, we present OptoMatKG, a literature-scale data engineering system whose core contributions are 
+threefold: (1) a domain-specific knowledge graph construction pipeline based on a nine-category full-
+workflow ontology; the resulting graph comprises 2.62 million entities and 3.38 million typed relations; (2) a 
+cascaded multi-stage retrieval pipeline that synergistically integrates LLM-based query normalization, 
+semantic vector indexing and Materials Project pre-filtering to enhance metric-aware candidate ranking; and (3) 
+an evidence-constrained auditing module that forces every output to anchor to DOI-supported reasoning chains, 
+thereby enforcing end-to-end hallucination prevention. Using optoelectronic inverse design as a validation 
+testbed, experiments verify that our entity extractor reaches a micro-averaged F1 of 0.971. Comprehensive 
+tests over 2000 real-world queries further demonstrate that our system surpasses keyword-based and single-
+stage baselines in Recall@K and metric coverage. The system accurately quantifies multi-objective 
+performance trade-offs while ensuring fully traceable inference. Although validated on photodetectors, the 
+proposed solution provides a generalizable, pluggable engineering framework readily extendable to other 
+functional material discovery pipelines. 
+1 Introduction 
+The rapid proliferation of heterogeneous scientific literature has created a fundamental data engineering 
+challenge: how to systematically extract, structure, and retrieve cross-referenced knowledge from millions of 
+published studies. In the domain of optoelectronic materials discovery, this challenge is particularly acute. [1–4] 
+Traditional research workflows rely on manual operation of computational simulation packages such as VASP[5], 
+Quantum-ESPRESSO[6], and Atomic Simulation Environment (ASE)[7], alongside static crystal databases including 
+the Materials Project[8] and Open Quantum Materials Database (OQMD)[9], all supplemented by time-consuming 
+manual reading of experimental papers. These workflows require extensive expertise to correlate material 
+compositions, fabrication processes, microstructural features, characterization techniques, and device performance 
+metrics—a labor-intensive process that suffers from high personal expertise dependence, low replicability, and 
+frequent omission of cross-dimensional experimental evidence.[10–12] 
+Existing computational approaches to accelerating this process fall into three categories: (1) high-throughput 
+density functional theory (DFT) calculations, which are computationally expensive and often fail to capture 
+synthesis-related experimental conditions; (2) machine learning surrogate models trained on static crystal databases, 
+which generalize poorly to novel composition spaces and provide limited traceability to original experimental</pre></section><section class='page' id='page-4'><h2>Page 4</h2><pre>3 
+evidence; and (3) keyword-based literature retrieval systems, which fail to capture domain-specific semantic 
+relationships and cannot support multi-objective trade-off queries. None of these paradigms adequately addresses 
+the dual requirements of optoelectronic device design: retrieving evidence-supported candidate materials while 
+providing auditable reasoning chains back to primary literature, with explicit marking of unreported metrics. 
+To overcome these limitations, we propose OptoMatKG, a literature-grounded knowledge graph and semantic 
+retrieval framework for traceable, evidence-constrained multi-objective screening of optoelectronic materials. The 
+core contributions of this work are threefold: 
+(1) We construct a full-process optoelectronic ontology and a DOI-provenanced knowledge graph spanning 
+experimental synthesis, fabrication processes, characterization methods, measurement data, and device performance 
+metrics. This graph enables auditable cross-link reasoning across the entire material research pipeline. 
+(2) We develop a cascaded multi-stage retrieval pipeline that integrates LLM-driven query normalization, 
+semantic vector indexing, Materials Project pre-filtering, and metric-aware graph supplementation. This pipeline 
+improves the ranking of candidates under complex multi-objective design constraints by adhering to evidence-
+supported metrics only, excluding missing values from constraint satisfaction. 
+(3) We design an evidence-constrained auditing module that links retrieved numerical values to verified graph 
+records and primary literature DOIs. For any unreported metric, the module outputs a missing indicator (i.e., missing 
+values are not used for multi-objective constraint satisfaction), while extracting interpretable reasoning paths 
+to mitigate hallucinatory quantitative claims. 
+2 Related Work 
+The related studies are divided into the following three main lines. 
+Domain-specific material knowledge graphs. Static crystal databases mainly store crystallographic and 
+thermodynamic parameters, while lacking unified structured descriptions of synthesis routes, fabrication processes, 
+characterization protocols and device-level optoelectronic performances[13]. Literature-mined knowledge graphs 
+such as Perovskite KG[14] and MatKG[15] generally adopt shallow ontology schemas or simple co-occurrence-based 
+relational links. They cannot construct complete end-to-end chains covering the full experimental workflow, and 
+few of them retain permanent DOI provenance for quantitative performance verification[16]. Consequently, existing 
+material graphs fail to support traceable, fully evidence-backed reasoning spanning material composition, 
+fabrication processing and device performance[17], which is essential for optoelectronic multi-objective screening. 
+Domain-adapted semantic retrieval strategies. Domain-pre-trained text encoders including SciBERT[18], 
+MatSciBERT[19] and MatBERT[20] outperform traditional keyword matching, yet mainstream retrieval pipelines only 
+index abstracts and superficial text mentions. They return unstructured text snippets instead of structured metric-
+aligned graph evidence.[21] Single-stage ranking merely optimizes overall text similarity, which severely impairs 
+retrieval accuracy for narrow-band optoelectronic metrics decisive to multi-objective device screening.[22] Though 
+auxiliary clustering or re-ranking modules are occasionally introduced, few frameworks adopt cascaded multi-stage</pre></section><section class='page' id='page-5'><h2>Page 5</h2><pre>4 
+filtering that fuses database-derived candidates and graph recall results, inevitably losing optimal materials targeting 
+specific performance metrics.[23] 
+LLM-based literature mining and hallucination suppression. Retrieval-augmented generation (RAG) has 
+become a mainstream paradigm for literature analysis.[24–26] However, most existing systems lack standardized 
+optoelectronic ontologies for cross-system performance comparison, hindering quantitative evaluation of 
+performance gaps between target requirements and candidate materials.[27, 28] Besides, retrieval and ranking modules 
+are rarely customized for multi-objective optoelectronic demands. Without complete evidence tracing mechanisms, 
+LLMs tend to generate unsubstantiated numerical predictions lacking valid literature citations.[29] Current anti-
+hallucination strategies mostly rely on isolated post-hoc validation, rather than an end-to-end audit workflow that 
+binds all predicted numerical results to graph records and original DOI sources.[30,31] Moreover, graph-augmented 
+LLM frameworks seldom explicitly label unreported performance metrics or generate human-readable evidence-
+supported reasoning chains required for optoelectronic inverse design screening.[32] 
+In summary, existing approaches exhibit three primary deficiencies: (1) knowledge graphs lack full-workflow 
+coverage and DOI-provenanced traceability; (2) retrieval pipelines fail to support metric-aware multi-stage filtering; 
+and (3) LLM-based systems lack evidence-constrained auditing to prevent hallucinated predictions.  
+3 Methodology 
+Figure 1 presents the optoelectronic knowledge graph, which stores structured KG records containing domain 
+entities and typed relational links. User design queries and graph records are fused via joint feature fusion, then fed 
+into a domain pre-trained MatBERT model with shared encoder weights. The model generates normalized query 
+vectors for user demands and record vectors for literature materials. All record vectors pass Materials Project pre-
+filtering and are stored in two offline databases: vector index for fine-grained similarity matching and semantic 
+clustering index for rapid coarse pre-filtering during retrieval. In the middle-right module, cosine similarity semantic 
+retrieval obtains Top-K candidate materials from the vector index assisted by clustering pre-filtering.The retrieved 
+candidates are imported into the evidence-constrained audit module, which sequentially implements DOI 
+provenance verification, quantitative performance gap analysis, labeling of unreported performance metrics, and 
+genetic algorithm (GA) multi-objective optimization, finally outputting interpretable, hallucination-free 
+optoelectronic material candidates for photodetector design.</pre></section><section class='page' id='page-6'><h2>Page 6</h2><pre>5 
+ 
+Figure 1. Framework of OptoMatKG retrieval: field-aware query normalization, vector Top-K search, evidence-
+constrained DOI filtering, and semantic grouping for traceable candidate recommendation. 
+3.1 Knowledge Graph Construction 
+We compiled a raw corpus containing 75,979 peer-reviewed optoelectronic papers. The dataset covers 
+photodetectors, light-emitting diodes, solar cells and other mainstream optoelectronic devices. The complete 
+pipeline for knowledge graph construction and data import is visualized in Figure 2. 
+ 
+Figure 2. Schematic workflow of OptoMatKG knowledge graph construction and data import. Optoelectronic 
+papers are processed by a dual-model LLM extraction module, reconciled via majority voting with conflict marking, 
+and aligned to a ten-category ontology. 
+To standardize extracted information, we establish a dedicated ontology with 9 mutually exclusive core entity 
+types and 10 standardized bidirectional semantic predicates. The logical architecture of this ontology, namely the 
+graph schema, is illustrated in Figure 3. 
+Domain Model 
+Query Vector
+ Cosine Similarity 
+Semantic Retrieval
+Record Vector
+Semantic 
+Clustering Index
+Vector Index
+User Design Question
+Store
+Cluster
+Pre-filter
+Shared Weights
+Top-K 
+Encode
+normalized
+normalized
+Similarity Match
+KG Record
+KG 
+Entities &amp; 
+Relationships
+Joint Feature 
+Fusion
+Optoelectronic Knowledge Graph
+Materials
+Project
+In​Ga​As
+In0.53​Ga0.47​As
+Genetic Algorithm
+Evidence-Constrained Audit Module
+DOI Provenance Check
+Performance Quantification
+Unreported Metric Labeling
+Literature Corpus
+75949
+Optoelectronic
+papers
+open databases
+Dual-Model
+Extraction
+DeepSeek
+Reconciliation
+Qwen
+Majority Voting
+Conflict Flag
+Ontology 
+Alignment
+Study
+Material
+System
+  
+Property
+Neo4j Graph 
+Import
+Batch Import
+Index Building
+py2neo
+Two-Stage
+Cypher
+OptoMatKG
+2.62 million
+entities
+3.38 million
+relational edges</pre></section><section class='page' id='page-7'><h2>Page 7</h2><pre>6 
+ 
+Figure 3. Knowledge graph schema for optoelectronic materials literature. Each node class denotes a distinct 
+materials-science concept; each directed edge denotes a typed semantic relation. 
+3.2 Semantic Indexing with MatBERT 
+ 
+Figure 4. MatBERT-based semantic indexing and candidate reranking in OptoMatKG. 
+Literature-derived system profiles (DOI, material, fabrication, and performance fields) are encoded by MatBERT 
+using WordPiece tokenization (maximum length 512). Token embeddings are pooled via [CLS] pooling into a fixed-
+length system embedding, followed by L2 normalization. User queries are projected into the same semantic space, 
+and cosine similarity is used to retrieve Top-K candidate systems. Retrieved candidates are then refined by semantic 
+reranking, including DOI deduplication and diversification via maximal marginal relevance (MMR) to reduce 
+redundancy, yielding semantically aligned candidate sets for downstream evidence-constrained graph auditing. 
+Optional clustering for latency optimization. To reduce online retrieval latency, we optionally apply K-means 
+clustering over system embeddings. During inference, cosine similarity is computed only against nearest cluster 
+centroids to accelerate nearest-neighbor search.  
+3.3 Multi-Stage Retrieval and Evidence-Constrained Audit 
+We propose a cascaded multi-stage semantic retrieval pipeline to map natural-language material design requests 
+to DOI-traceable candidates, equipped with an evidence-limited audit module to avoid LLM hallucinations. The 
+Study
+System
+Process
+Material
+Property
+Performance
+Measurement
+has process
+has system
+acts on
+has property
+has performance
+tested by
+Structure
+obtained with
+tested by
+consists of
+determines
+has structure
+Characterization
+MatBERT
+DOI
+Material 
+Fabrication
+Performance
+  
+Literature Systems
+Profile
+Embedding
+Query
+Embedding
+Cosine diversified
+WordPiece 512 tokens
+Token embedding +
+L2 normalization
+Deduplicated
+1
+2
+3
+4
+5
+6
+7
+8
+  
+Reranked</pre></section><section class='page' id='page-8'><h2>Page 8</h2><pre>7 
+pipeline integrates metric-aware graph supplementation, Materials Project pre-filtering, Neo4j keyword 
+supplementation and candidate diversification to balance multi-objective retrieval recall and diversity. Frontend 
+caching is used to lower inference cost, and ablation tests are conducted with identical core retrieval configurations 
+(audit module disabled for all baselines). Detailed hyperparameters and module logic are listed in Supporting 
+Information Tables S1–S2. 
+Retrieved top-10 candidates are further refined by a four-step audit workflow: metric normalization and gap 
+classification, domain-aware candidate prioritization, full attribute deep-fetching from Neo4j, and evidence-
+constrained LLM summary generation. To eliminate unfounded predictions, we embed multiple anti-hallucination 
+strategies: unmeasured metrics are not inferred, fake values and invalid DOIs are discarded. 
+3.4 Genetic Algorithm-guided Multi-objective Candidate Refinement 
+ 
+Figure 5. Schematic of genetic algorithm (GA) operators in OptoMatKG: individual encoding, crossover, mutation, 
+and multi-objective selection or update. Candidate designs are evolved for 30 generations to obtain a Pareto front of 
+non-dominated solutions. 
+To improve multi-objective trade-offs after semantic retrieval, we optionally run a continuous-variable GA. Each 
+individual is encoded as a normalized gene vector over a constrained design space (composition, strain, and device-
+geometry variables), then decoded into physically interpretable parameters. The design-space bounds are informed 
+by validated material proposals and physics checks rather than direct fitting to DOI-audited numeric ranges. 
+For material-level search, the objective vector 𝐹 is minimized using bandgap mismatch and optional losses. In 
+photodetector mode, response time, dark current, and detectivity are evaluated via surrogate proxy models (order-of-
+magnitude device estimates), not by directly optimizing DOI-audited experimental values. Evolution uses non-
+dominated sorting genetic algorithm II (NSGA-II)[33], with tournament selection, simulated binary crossover 
+(SBX)[34], polynomial mutation (PM; distribution index 𝜂= 15)[35], and elitist update from 𝑃𝑘 to 𝑃𝑘+1 over 30 
+generations (population size 40). The operators are schematized in Figure 5. Importantly, the GA output does not 
+fabricate literature evidence; it proposes proxy-level design hypotheses that complement, rather than replace, DOI-
+audited screening under conflicting objective. 
+Individual Encoding
+g1=0.32
+g2=0.67
+g3=0.45
+g4=0.81
+Sn Fraction
+Strain Epsilon
+Core Width
+Doping Level
+0.41
+0.67
+420
+P-type
+Parameter
+Decoded Value
+Decode
+ (a)
+0.32
+0.67
+0.45
+0.81
+(b)
+Parent A
+0.55
+0.21
+0.90
+0.38
+Parent B
+0.32
+0.21
+0.90
+0.81
+Offspring
+Crossover
+0.32
+0.67
+0.45
+0.81
+(c)
+Simulated Binary Crossover
+Before
+0.32
+0.74
+0.45
+0.81
+After
+polynomial perturbation
+Polynomial Mutation
+(d)
+Population Pk
+Evaluate Objectives F(x)
+Non-dominated Sorting
+Tournament Selection
+Elite+Offspring PK+1
+NSGA-II Selection
+Iterate</pre></section><section class='page' id='page-9'><h2>Page 9</h2><pre>8 
+4 Experiments and Results  
+We evaluate OptoMatKG along six complementary dimensions: (1) experimental protocol covering datasets, 
+baselines and evaluation metrics; (2) dual-model entity extraction performance; (3) scale and schema coverage of 
+the constructed knowledge graph; (4) retrieval ablation experiments based on 2000 design queries; (5) fine-grained 
+SiC case analysis and a 1550 nm photodetector screening case, which distinguishes DOI-audited experimental 
+evidence from external engineering benchmarks; (6) surrogate-assisted generative design exploration for scenarios 
+where limited literature data cannot resolve multi-objective trade-offs. 
+4.1 Experimental setup 
+Dataset and corpus. The knowledge graph is constructed from 75,979 peer-reviewed optoelectronic papers and 
+stores DOI-linked Study and System records covering synthesis routes, fabrication processes, characterization 
+operations, measurement data, and device performance specifications (Section 3.1). Entity extraction performance is 
+evaluated on 11 held-out manuscripts annotated with fact-level labels following the proposed domain ontology. 
+Retrieval experiments adopt 2000 paraphrased requirement queries generated from standardized system-profile 
+cards. An additional system-profile oracle setting is deployed to examine the model’s capacity to recover 
+semantically nearest-neighbor material systems. 
+Baselines. For all ablation variants, the evidence-constrained auditing module is disabled, and a unified Top-K 
+retrieval budget is maintained for fair comparison (Table 1). Four pipeline configurations are defined as follows: B0 
+generates LLM-paraphrased candidate profiles without graph hydration; B1 implements keyword-driven Neo4j 
+retrieval equipped with graph hydration; B2 performs single-stage MatBERT embedding retrieval on system profiles 
+without keyword-based supplementation; B3 corresponds to our complete cascaded multi-stage pipeline. This set of 
+ablations enables separate comparisons between keyword-based graph retrieval, single-stage semantic retrieval, and 
+their cascaded integration under identical experimental conditions. 
+Table 1. Parameter configurations of four ablation groups (B0–B3). The audit workflow is disabled for all ablation 
+tests. 
+Config 
+Semantic index 
+Neo4j 
+keyword 
+Graph hydration 
+MMR reranking 
+(λ=0.72) 
+B0 
+LLM paraphrased 
+profiles 
+No 
+No 
+No 
+B1 
+No 
+Yes 
+Yes 
+No 
+B2 
+Raw query embedding 
+No 
+No 
+No 
+B3 (full 
+System profile 
+Yes  
+Yes 
+Yes</pre></section><section class='page' id='page-10'><h2>Page 10</h2><pre>9 
+Config 
+Semantic index 
+Neo4j 
+keyword 
+Graph hydration 
+MMR reranking 
+(λ=0.72) 
+pipeline) 
+embedding 
+ 
+Metrics. For entity extraction, we adopt micro-averaged Precision, Recall and F1 calculated at the fact level 
+based on true positives (TP), false positives (FP), and false negatives (FN). Retrieval performance is quantified via 
+Recall@K and mean reciprocal rank (MRR) against ground-truth (DOI, system ID) pairs, together with metric 
+coverage (MCov). MCov is a binary query-level indicator, assigned as 1 if any retrieved evidence entry contains at 
+least one requested target-metric field within structured records, and 0 otherwise. Notably, MCov only validates the 
+existence of relevant metric fields rather than compliance with numerical performance thresholds; threshold 
+verification and performance gap labeling are executed in the subsequent evidence-constrained auditing stage. 
+Table 2. Definition of six metric gap status labels for audit workflow and the eligibility for metric leader ranking. 
+Status 
+Definition 
+Eligible as metric leader 
+Meets target 
+Value satisfies threshold or matches within tolerance 
+Yes 
+Below or Above target 
+Target threshold unfulfilled 
+Yes 
+Off-target 
+Equality out of tolerance range 
+Yes 
+Mentioned only 
+Metric text exists without numeric data 
+No 
+Not reported 
+No relevant metric records found 
+No 
+ 
+To comprehensively characterize qualitative differences in Top-K candidate shortlists beyond conventional 
+retrieval metrics, we introduce three supplementary evaluation metrics: UniqueDOI@K, UniqueMaterial@K and 
+intra-list distance (ILD@K). UniqueDOI@K and UniqueMaterial@K denote the counts of distinct DOIs and 
+normalized material strings within the Top-K retrieved entries. As an inherent constraint, UniqueDOI@K ≤ K, while 
+UniqueMaterial@K may exceed K when a single evidence entry involves multiple materials. ILD@K is defined as 
+the average pairwise cosine distance between MatBERT embeddings of Top-K system profiles, which reflects the 
+diversity of retrieved candidate sets. 
+4.2 Entity extraction quality 
+Domain researchers defined the ontology schema and manually reviewed extracted Study and System records 
+throughout corpus construction. For quantitative evaluation, we adopt Qwen-Plus as an automated evaluator, which 
+aligns each extracted JSON record with the original manuscripts and labels each fact as TP, FP or FN following the</pre></section><section class='page' id='page-11'><h2>Page 11</h2><pre>10 
+predefined ontology. Eleven optoelectronic manuscripts are processed via the dual-verification pipeline, with 
+DeepSeek-V4-Pro serving as the default extraction model. Aggregated evaluation yields micro-averaged Precision = 
+0.990, Recall = 0.952 and F1 = 0.971 (729 TP, 7 FP, 37 FN). The Study and Characterization entities achieve an F1 
+score of 1.000; Property, Performance and Structure entities obtain F1 values exceeding 0.988. By contrast, Process 
+(F1 = 0.928) and Measurement (F1 = 0.943) exhibit relatively lower recall, which is mainly attributed to fragmented 
+textual descriptions of fabrication procedures and compact tabular measurement data in raw literature. 
+To validate the reliability of automated evaluation results, a domain expert independently examined a random 
+subset containing 100 extracted facts from the 11 held-out manuscripts against the original full text, following a 
+standardized checklist: entity existence, numerical values consistent with corresponding metrics within a 5% 
+tolerance, and complete multi-token descriptive evidence. Under this rigorous manual protocol, 79 out of 100 
+extracted facts (79%) are fully supported by source literature. The unsupported entries mostly arise from absent 
+entity information in the raw text corpus or isolated numerical values without associated metric descriptors, instead 
+of arbitrarily generated numerical data. 
+We emphasize that the manual audit adopts stricter evidence criteria than the Qwen-Plus automated evaluator. 
+The human reviewer demands complete source traceability for every extracted field, while Qwen-Plus only assesses 
+whether extracted information conforms to the structural constraints of the ontology schema. Consequently, the 79% 
+manual support ratio reflects factual completeness and traceability, and does not conflict with the 0.990 extraction 
+precision. The F1 = 0.971 effectively quantifies the extraction performance under ontology constraints, whereas the 
+21% unsupported fraction illustrates inherent dataset limitations, which are further discussed in Section 6, including 
+data sparsity and incomplete text coverage in scientific publications. 
+ 
+Figure 6. Heatmap of Precision, Recall and F1 scores for each ontology entity category aggregated over 11 
+annotated manuscripts. The sample count (n) and true positive (TP) count are labeled for each entity type. 
+4.3 Knowledge-graph statistics and encoder choice 
+Table 3 presents the detailed node and relation statistics of the constructed OptoMatKG, containing 2.625 
+million entities and 3.384 million typed relational edges. The designed ontology maintains a standardized 
+ ntity type (pooled over    papers)
+ recision
+ ecall
+  
+ etric
+ .00
+ .00
+ .00
+ .00
+ .00
+ .00
+0.  
+ .00
+0. 7
+ .00
+ .00
+ .00
+ .00
+0.  
+0.  
+0. 7
+0.  
+0.  
+ .00
+ .00
+ .00
+ .00
+ .00
+0.  
+0. 7
+0.  
+0.  
+ er entity type extraction quality (         summed across    papers)
+0. 7 
+0. 00
+0. 2 
+0.  0
+0. 7 
+ .000
+ core</pre></section><section class='page' id='page-12'><h2>Page 12</h2><pre>11 
+hierarchical chain of Study–System–Material/Process/Performance, where each Study node is anchored with 
+original DOI provenance information. This DOI-trackable architecture supports fine-grained attribute retrieval and 
+evidence tracing, enabling reliable factual auditing of characterization and measurement records. 
+Table 3. Statistics of the OptoMatKG knowledge graph. 
+Node Type 
+Count 
+Relation Type 
+Count 
+Property 
+810,143 
+has property 
+810,143 
+Performance 
+347,718 
+test by 
+852,976 
+Process 
+214,990 
+has performance 
+347,718 
+Structure 
+238,765 
+determines 
+44,475 
+Characterization 
+135,164 
+consists of 
+431,620 
+Material 
+431,620 
+has process 
+214,990 
+System 
+210,619 
+acts on 
+71,192 
+Measurement 
+160,261 
+has structure 
+238,765 
+Study 
+76,079 
+obtained with 
+161,369 
+ 
+ 
+has system 
+210,619 
+Total 
+2,625,359 
+Total 
+3,383,867 
+ 
+ 
+Figure 7. Example OptoMatKG subgraph for a solar cell. (a) Schema links among Study, Processes, System, 
+Material and Performance. (b) Corresponding node attributes, including performance values, system descriptors, 
+process details and Materials Project IDs. 
+We evaluate the performance of OptoMatKG from five dimensions: entity extraction quality on 11 annotated 
+manuscripts, large-scale knowledge graph statistical characteristics, retrieval ablation experiments on 2000 
+benchmark queries, fine-grained SiC entity modeling, and a representative photodetector retrieval case study. 
+All test labels are manually annotated by domain researchers, and we employ Qwen-Plus to conduct automated 
+evaluation: the model compares each extracted JSON record against source manuscripts and labels true positives 
+Solar cell
+10.1002/adfm.
+201703687
+Electrode 
+Deposition
+CdS Film
+Deposition
+has process
+has system
+has process
+acts on
+acts on
+a
+Open-
+Circuit 
+Voltage
+PbS-PbI2
+has performance
+consists of
+b
+Open-Circuit 
+Voltage
+Value: 0.62
+Unit: V
+PbS-PbI2
+material form: thin fIlm
+material project ID: mp-672 
+Solar cell
+material form geometry: film
+phase: solid
+device function: absorber
+interaction environment: 
+NULL
+Electrode Deposition
+step order: 6
+process detail: 70 nm 
+gold electrodes were 
+thermally evaporated
+Node attributes of the highlighted subgraph
+Schema subgraph with process–system links</pre></section><section class='page' id='page-13'><h2>Page 13</h2><pre>12 
+(TP), false positives (FP) and false negatives (FN) at the fact level under our ten-category ontology. Eleven 
+optoelectronic manuscripts are processed through the dual-investigator pipeline with DeepSeek-V4-Pro as the 
+default extractor. Aggregated statistics across all samples yield micro-averaged Precision = 0.990, Recall = 0.952 
+and F1 = 0.971 (729 TP, 7 FP, 37 FN). Study and Characterization entities achieve perfect F1 = 1.000; Property, 
+Performance and Structure exceed F1 = 0.988. Process (F1 = 0.928) and Measurement (F1 = 0.943) exhibit 
+relatively lower recall, attributed to fragmented process descriptions and dense tabular test records in raw text. These 
+results verify that the proposed ontology and extraction pipeline capture most literature-grounded facts required for 
+downstream inverse design tasks. 
+ 
+Figure 8. Quantitative comparison of five BERT-based pre-trained models on property matching (a) and semantic 
+similarity (b). F1, accuracy and separability are reported for each model. 
+ o verify Opto atKG’s fine-grained modeling and multi-dimensional association capability, we use a film-type 
+silicon carbide (SiC) case study. The SiC node SiC|mp-8062 is linked via directed relations to five key thin-film 
+structural and morphological properties (grain size, film width, surface roughness, interplanar spacing, and Raman 
+peak position). Each property node stores standardized values, units, characterization methods, an literature sources, 
+enabling systematic aggregation across material–microstructure–characterization evidence. Details are in Table 4. 
+Table 4. Standardized Attributes of 6 SiC Material Entities in the OptoMatKG Knowledge Graph 
+No. 
+Material Name 
+Material 
+Form 
+Material Id 
+mpId 
+1 
+SiC 
+N/A 
+SiC|mp-11714 
+mp-11714 
+2 
+SiC 
+Film 
+SiC|mp-8062 
+mp-8062 
+3 
+SiC 
+bulk 
+SiC| 
+N/A 
+ odel
+0.0
+0.2
+0. 
+0. 
+0. 
+ .0
+ core
+0.7 
+0.7 
+0.7 
+0.7 
+0.7 
+0.  
+0. 0
+0. 0
+0. 0
+0. 0
+0.  
+0.  
+0. 2
+0. 0
+0. 0
+ 
+ roperty matching
+   score
+Accuracy
+AU 
+ odel
+0.0
+0.2
+0. 
+0. 
+0. 
+ .0
+ core
+0.  
+0.70
+0. 7
+0. 7
+0. 7
+0.  
+0. 7
+0. 0
+0. 0
+0. 0
+0.  
+0.  
+0.0 
+0.0 
+0.07
+ 
+ emantic similarity
+   score
+Accuracy
+ epara ility</pre></section><section class='page' id='page-14'><h2>Page 14</h2><pre>13 
+No. 
+Material Name 
+Material 
+Form 
+Material Id 
+mpId 
+4 
+SiC 
+thin Film 
+SiC|mp-11713 
+mp-11713 
+5 
+SiC 
+N/A 
+SiC|mp-1002206 
+mp-1002206 
+6 
+SiC 
+bulk 
+SiC|mp-1204356 
+mp-1204356 
+ 
+4.4 Retrieval ablation 
+We conduct retrieval ablation experiments on 2000 paraphrased optoelectronic design queries to quantify the 
+effectiveness of different pipeline components. Under the unified evaluation protocol, the keyword-enhanced graph 
+retrieval (B1) and the full cascaded pipeline (B3) achieve competitive gold-DOI retrieval performance, with 
+identical core metrics: Recall@10 = 0.486, Recall@50 = 0.614, MRR = 0.303, and a near-complete metric coverage 
+(MCov = 0.998). In contrast, the single-stage MatBERT semantic retrieval (B2) suffers severe degradation in gold-
+DOI localization, obtaining extremely low ranking performance (Recall@10 = 0.0015, Recall@50 = 0.004, MRR = 
+0.001) and limited metric coverage (MCov = 0.396). The LLM-only baseline (B0) yields marginal recall 
+performance near the  aseline floor ( ecall@ 0 ≈ 0,   ov ≈ 0.  ).  hese results demonstrate that pure semantic 
+embedding matching or LLM-based paraphrasing cannot support reliable DOI-level system retrieval for open-ended 
+design queries, and keyword-driven graph supplementation is indispensable for valid literature grounding in 
+practical material screening scenarios. 
+ 
+Figure 9. Retrieval ablation results on paraphrased requirement queries and system-profile oracle queries (b). All 
+bars illustrate Recall@K and metric coverage (MCov). MCov evaluates the existence of target metric fields in 
+structured evidence rather than numerical threshold compliance. 
+ @ 0
+  ov
+0.00
+0.2 
+0. 0
+0.7 
+ .00
+ core
+0.00
+0.  
+0.  
+ .00
+0.00
+0. 0
+0.  
+ .00
+a
+ araphrased requirement queries
+ @ 0
+  ov
+0.00
+0.2 
+0. 0
+0.7 
+ .00
+ core
+0.0 
+0.  
+0.  
+0.  
+ .00
+0.  
+0.  
+0.  
+ 
+ ystem profile queries (oracle upper  ound)
+ 0     guided ( aseline)
+   KG only (a lation)
+ 2  emantic only (a lation)
+    ull pipeline (Ours)</pre></section><section class='page' id='page-15'><h2>Page 15</h2><pre>14 
+Despite the comparable gold-recall performance between B1 and B3 on paraphrased requirement queries, the 
+two pipelines generate fundamentally different candidate shortlist compositions. The consistent Recall@K, MRR 
+and MCov results indicate that literal keyword matching dominates exact gold-DOI retrieval under the single-gold 
+evaluation protocol adopted in this work. Rather than pursuing marginal improvements in exact gold recall, the 
+cascaded multi-stage design of B3 focuses on optimizing the quality and diversity of retrieved candidate pools. 
+Statistical results on all 2000 query samples show that B3 produces a significantly larger volume of valid evidence 
+entries (average ≈ 0 entries per query) than the pure keyword- ased    pipeline (average ≈2  entries), at the cost of 
+moderate computational latency. Specifically, the integration of semantic indexing and MMR diversification 
+rebalances the ranking distribution: B3 weakens the over-concentration of keyword-matched systems in the Top-10 
+ranking while maintaining exact gold-DOI recall accuracy. Since the OptoMatKG framework incorporates a 
+downstream evidence-auditing module instead of directly adopting raw Top-K results, the expanded and diversified 
+candidate pool generated by B3 provides richer structured evidence for subsequent gap analysis and factual auditing. 
+Further diversity verification results validate the inherent advantages of the full pipeline (Figure 10). At K=10, 
+B1 and B3 exhibit comparable performance in UniqueDOI@K, UniqueMaterial@K and intra-list distance (ILD@K). 
+When expanding to K=50, B3 substantially increases the number of distinct DOIs and normalized material 
+candidates while maintaining competitive embedding diversity, verifying that the cascaded semantic-keyword fusion 
+mechanism effectively breaks the limitation of keyword-only retrieval and enriches candidate coverage. In contrast 
+to paraphrased requirement queries, system-profile oracle queries (Figure 9b) with standardized and profile-
+consistent wording fully demonstrate the superiority of the full pipeline. B3 achieves a much higher Recall@50 of 
+0.991 compared with 0.647 for B1, while preserving a high metric coverage of 0.991. Overall, exact gold-DOI 
+retrieval for open-ended user queries is mainly constrained by keyword matching, while the proposed multi-stage 
+pipeline delivers core values in expanding diverse audit candidates and improving semantic matching accuracy for 
+standardized profile queries. 
+We further analyze the practical significance of the obtained Recall@10 = 0.486 result. This metric indicates that 
+nearly half of the paraphrased queries fail to retrieve the exact gold-standard DOI within the Top-10 candidates 
+under the single-gold evaluation setting. We treat this result as an inherent limitation of the benchmark protocol 
+rather than a defect of the system. Different from conventional closed-domain question-and-answer models that 
+pursue exact single-answer matching, OptoMatKG is designed as an evidence-auditable material screening system. 
+Its core practical value lies in providing traceable DOI-level evidence, complete metric field coverage (MCov = 
+0.998), reliable long-tail retrieval capability (Recall@50 = 0.614), and explicit unreported-metric gap labeling. Even 
+if the exact gold record is missing from the Top-10 ranking, the retrieved candidates still provide valid, verifiable 
+structured evidence for manual inspection, screening and iteration, which conforms to the standard workflow of 
+scientific material design. 
+In-depth error analysis reveals three main causes for Top-10 false-negative cases: first, semantic gaps exist 
+between free-form user query paraphrases and the standardized structured fields of indexed system profiles; second, 
+user queries often contain underspecified or implicit constraint information, while the gold-standard system profile 
+records contain richer device and process attribute details; third, the strict single-(DOI, system) labeling protocol</pre></section><section class='page' id='page-16'><h2>Page 16</h2><pre>15 
+treats highly similar and homologous literature as invalid matches, even when these candidates contain valid 
+auditing metrics consistent with user requirements. We randomly sampled 50 B3 false-negative cases for 
+quantitative statistics: 16% of errors stem from query paraphrasing ambiguity and incomplete constraint description; 
+26% correspond to near-miss cases where the gold-standard system is ranked between 11–50; 58% belong to deep-
+miss cases where the target system exists in the knowledge graph but fails to enter the Top-50 ranking. Future 
+improvements will focus on enhancing LLM-based query normalization and entity grounding, and relaxing the 
+single-gold evaluation constraint to adapt to multi-evidence scientific retrieval scenarios. 
+In oracle query scenarios with highly consistent textual distribution with indexed system profiles, single-stage 
+semantic retrieval (B2) achieves near-perfect Recall@50 but suffers a sharp drop in metric coverage (MCov = 
+0.509). By comparison, B1 and B3 maintain superior metric field coverage (MCov = 0.991) with competitive 
+retrieval accuracy. The comprehensive performance comparison demonstrates that the proposed cascaded pipeline 
+realizes a practical and robust trade-off: semantic embedding ensures fine-grained semantic discovery, keyword-
+graph fusion guarantees structured metric field alignment, and MMR diversification optimizes candidate diversity 
+for downstream evidence auditing. 
+ 
+Figure 10. Candidate shortlist diversity comparison between B1 and B3. The statistical indicators include average 
+UniqueDOI@K and UniqueMaterial@K . The two pipelines show comparable Top-10 diversity, while B3 achieves 
+significantly expanded unique DOI and material coverage at K=50 (n = 40 for K=10; n = 25 for K=50). 
+4.5 Fine-grained modeling and photodetector case study 
+We evaluate the system against a representative design requirement: &quot;photodetector operating at 300 K and 1550 
+nm, with specific detectivity 𝐷∗&gt; 5 × 1011 Jones, response time &lt; 50 ps, and dark current &lt; 1 nA.&quot; OptoMatKG 
+retrieves candidate systems via knowledge graph traversal, performs deep attribute resolution, and assesses metric 
+satisfaction against DOI-linked quantitative records. Among the retrieved literature entries, the highest reported 
+UniqueDOI
+Unique aterial
+0
+ 
+ 0
+  
+ ean count
+K= 0 (n= 0)
+  
+  
+UniqueDOI
+Unique aterial
+0
+20
+ 0
+ 0
+ 0
+ ean count
+K= 0 (n=2 )</pre></section><section class='page' id='page-17'><h2>Page 17</h2><pre>16 
+specific detectivity is 𝐷∗= 3.5 × 1010 Jones, observed in a GaInAs/InP quantum-well infrared photodetector—
+falling short of the target threshold. Moreover, response time and dark current values are frequently unreported in 
+the literature, and wavelength-based retrieval can return off-target candidates (e.g., ultraviolet AlGaN 
+photoconductors). Rather than synthesizing fictitious devices that fully meet all constraints, the auditing module 
+returns partially matched, evidence-grounded candidates and explicitly flags missing performance metrics. 
+External engineering benchmarks and surrogate design hypotheses. Distinct from DOI-grounded evidence 
+evaluation, we introduce external references for comparative context. We adopt published performance ranges from 
+commercial datasheets for lattice-matched In0.53Ga0.47As as practical  enchmarks: responsivity ≈0.  –0.   A W⁻¹, 
+dark current spanning pA to nA, response time ≈   ps, and 𝐷∗&gt; 1 × 1012 Jones at 1550 nm under 300 K. 
+Separately, we examine a waveguide PIN device concept based on Ge0.829 n0.171 through surrogate device 
+modeling. This composition offers a bandgap of ~0.774 eV, closely matching the 1550 nm target, and yields a 
+projected response time of ~5.4 ps in a narrow-depletion design. However, the lattice mismatch with Si introduces 
+inherent penalties, including elevated dark current and reduced detectivity. We stress that these surrogate projections 
+and commercial reference data are neither em edded into Opto atKG’s structured metric fields nor claimed as 
+experimentally validated, DOI-audited findings. 
+4.6 Generative design exploration via surrogate-assisted GA 
+When DOI-audited literature screening yields only partial evidence and cannot resolve inherent multi-objective 
+performance trade-offs, OptoMatKG activates a surrogate-assisted NSGA-II evolutionary optimization pipeline 
+(Section 3.4) for hypothesis-driven design exploration. This generative module explores feasible device 
+configurations at the proxy level rather than fabricating non-existent literature records. The optimization evolves 
+normalized design vectors spanned by key GeSn waveguide PIN parameters, including material composition, strain 
+magnitude, depletion width, waveguide length, and active area. After decoding into physical units, candidate designs 
+are evaluated via a multi-objective surrogate function, without altering the DOI-retrieved evidence shortlists or 
+optimizing experimentally reported literature values. As a complementary module, the generative exploration 
+workflow augments, rather than replaces, the evidence-constrained screening paradigm. 
+The surrogate multi-objective loss vector is defined as: 
+𝑓(𝑥) = [∆𝐸𝑔(𝑥), 𝜏𝑒𝑥(𝑥), 𝐼𝑑𝑎𝑟𝑘,𝑒𝑥(𝑥), 𝐷𝑠𝑓
+∗(𝑥)]. 
+Device performance metrics are calculated through analytical surrogate models tailored for GeSn waveguide PIN 
+architectures, including optical absorption 𝜂= 1 −exp⁡(−𝛼𝐿), combined transit/RC response time 𝜏= √𝜏tr
+2 + 𝜏  
+2 , 
+area- and perimeter-coupled dark current 𝐼dark = 𝐽0𝐴+ 𝑐√𝐴𝐽0, and specific detectivity 𝐷∗= 𝑅√𝐴/√2𝑞𝐼dark. Full 
+formula derivations and calibrated coefficients are provided in the Supporting Information. While the surrogate 
+formulas and objective calibrations are customized for the GeSn photodetector case, the overall NSGA-II 
+optimization framework is fully reusable and can be rapidly adapted for other material and device systems via 
+surrogate replacement.</pre></section><section class='page' id='page-18'><h2>Page 18</h2><pre>17 
+The bandgap mismatch term is derived from a normalized fitting score targeting the 1550 nm corresponding 
+bandgap 𝐸𝑔,target ≈0.800 eV, with a tolerance range 𝛿= 0.25 eV: 
+fit = max (0,1 −|𝐸𝑔(𝑥) −𝐸𝑔,𝑡𝑎𝑟𝑔𝑒𝑡|
+𝛿
+) , Δ𝐸𝑔(𝑥) = 1 −fit. 
+The remaining three objectives adopt one-sided, target-normalized excess/shortfall formulations clamped within 
+the range [0, 1] to ensure balanced multi-objective optimization: 
+𝜏ex = min(1, max⁡(0, 𝜏−𝜏𝑡
+𝜏𝑡
+)), 
+𝐼dark,ex = min(1, max⁡(0, 𝐼𝑑𝑎𝑟𝑘−𝐼𝑡
+𝐼𝑡
+)), 
+𝐷sf
+∗= 𝑚𝑖𝑛(1, 𝑚𝑎𝑥⁡(0, 1 −𝐷∗
+𝐷𝑡
+∗)). 
+Notably, to avoid objective saturation and preserve meaningful Pareto trade-offs, the GA optimization does not 
+adopt the original commercial-level query thresholds (50 ps, 1 nA, 5 × 1011 Jones). Instead, the objective targets are 
+recalibrated to the effective operating range of the device surrogate model: 𝜏𝑡= 4 ps, 𝐼𝑡= 50 nA, and 𝐷𝑡
+∗=
+3.4 × 107 Jones. 
+ 
+Figure 11. Multi-objective optimization benchmark between NSGA-II and random sampling based on the GeSn 
+waveguide photodetector surrogate model. 
+We evaluate the exploratory performance of NSGA-II under fixed and matched computational budgets: 
+population size of 20, 15 evolutionary generations, and approximately 320 function evaluations per random seed, 
+with five independent repeated runs. The proposed NSGA-II pipeline achieves a higher mean hypervolume of the 
+Pareto archive than random sampling ( 1.4639 ± 0.0001 vs. 1.4519 ± 0.0109 ) and yields lower scalarized 
+surrogate loss (Figure 11). Consistent performance improvement is observed across all five seed runs. A paired two-
+sided Wilcoxon signed-rank test yields 𝑝= 0.0625, which represents the theoretical minimum achievable two-
+2
+ 
+ 
+ 
+ 0
+ 2
+  
+  
+Generation (or matched  atch)
+0. 
+ .0
+ . 
+ .2
+ . 
+ . 
+ . 
+ ypervolume
+                                    
+  GA II
+ andom
+  GA II
+ andom
+0.0
+0.2
+0. 
+0. 
+0. 
+ .0
+ .2
+ . 
+ inal hypervolume
+ .   
+ .  2</pre></section><section class='page' id='page-19'><h2>Page 19</h2><pre>18 
+sided 𝑝-value for five identically signed paired differences. A paired 𝑡-test further returns 𝑝= 0.069. Neither result 
+satisfies the standard statistical significance threshold (𝛼= 0.05). Therefore, the obtained results demonstrate a 
+stable and promising exploratory trend under limited computational budgets, rather than statistically definitive 
+superiority.  his o servation aligns with the module’s design purpose of surrogate-assisted generative exploration. 
+All optimized solutions are purely model-derived and do not constitute physical experimental validation. 
+5 Conclusion 
+This work develops OptoMatKG, a literature-grounded knowledge graph integrated with a cascaded retrieval-
+and-audit framework for evidence-constrained optoelectronic material screening. Constructed from 75,979 peer-
+reviewed publications, the established knowledge graph contains 2.625 million entities and 3.384 million typed 
+relational edges, forming a structured, DOI-traceable data foundation for device-centric knowledge organization. 
+Integrating MatBERT semantic indexing and multi-stage graph fusion, the framework converts open-ended natural-
+language design queries into standardized, auditable evidence packages. These structured outputs deliver ranked 
+candidate systems, quantitative performance gap annotations, fine-grained graph attributes, and interpretable 
+material-process-performance reasoning chains grounded in literature. Quantitative evaluation demonstrates that the 
+entity extraction pipeline achieves a micro-averaged F1 score of 0.971 on manually annotated manuscripts. 
+Evaluated on 2000 practical design queries, the keyword-graph-enhanced pipeline significantly outperforms single-
+stage semantic embedding retrieval in exact DOI-level system grounding, while the high metric coverage guarantees 
+field-aligned structured evidence for downstream auditing, avoiding unconstrained free-form generation. 
+ omprehensive case studies further validate the framework’s practicality and ro ustness.  he thin-film SiC 
+su graph analysis verifies the model’s capacity for fine-grained, multi-dimensional property association and 
+complete literature provenance recording. The 1550 nm photodetector screening case demonstrates that OptoMatKG 
+reliably outputs partially matched literature evidence and explicitly identifies unresolvable performance gaps, 
+without generating fictitious fully compliant device records. Furthermore, surrogate-assisted genetic algorithm 
+exploration and commercial datasheet benchmarks are strictly categorized as model-derived engineering hypotheses, 
+which are clearly decoupled from literature-verified experimental evidence to maintain factual rigor. 
+We systematically analyze the limitations of the present system. Under the strict single-gold-DOI evaluation 
+protocol, the best-performing cascaded pipeline (B3) achieves comparable Top-10 recall performance to pure 
+keyword graph retrieval (B1), indicating that exact gold-DOI localization remains dominated by literal keyword 
+matching for paraphrased user queries. Accordingly, practical screening effectiveness should be comprehensively 
+evaluated by integrating metric coverage, candidate pool diversity, oracle-query retrieval accuracy, deep Recall@K 
+performance, and auditable gap labeling, rather than relying solely on top-ranked exact matching. A domain expert 
+checklist-based audit on 100 randomly sampled extracted facts validates that 79% of the structured records are fully 
+traceable to original full-text content. In-depth error analysis further attributes most Top-10 false-negative cases to 
+deep ranking failures and near-miss gold rankings, rather than incomplete profile coverage in the knowledge base.</pre></section><section class='page' id='page-20'><h2>Page 20</h2><pre>19 
+Despite the inherent coverage limitation of the finite literature corpus, OptoMatKG exhibits distinct advantages 
+over conventional retrieval-augmented generation (RAG) systems. It strictly constrains all numerical performance 
+reports to DOI-verified graph evidence, explicitly marks unreported metric fields, and systematically separates 
+model-generated engineering hypotheses from literature-supported factual claims. Different from traditional open-
+ended generation paradigms, this framework prioritizes traceability, auditability and factual reliability for scientific 
+material screening. Future directions include enhancing query normalization and paraphrase adaptation, improving 
+top-rank candidate diversity, expanding evolutionary optimization budgets to achieve statistically significant 
+generative exploration, strengthening cross-study relational reasoning, and releasing a public query API to facilitate 
+open-source data science applications. 
+ 
+Acknowledgements This work was supported by the Chinese Academy of Sciences Pioneer Initiative (CAS 
+Leading Action Plan) (corresponding author: L. Zhang). 
+Author Contributions The author has given approval to the final version of the manuscript. 
+Data Availability Statement Code and data are available at: https://github.com/ni-zefeng/OptoMatKG 
+Declarations 
+Conflict of Interest  
+The authors have no conflicts to disclose. 
+References 
+1.  
+Li S, Wei S, Huang C, et al (2026) Extracting and reconstructing knowledge in materials science literature 
+using large language models. Commun Mater 
+2.  
+Sayeed HM, Clark C, Mohanty T, Sparks TD (2026) KnowMat: An Agentic Approach to Transforming 
+Unstructured Materials Science Literature into Structured Data. Integrating Mater Manuf Innov 1–10 
+3.  
+Tshitoyan V, Dagdelen J, Weston L, et al (2019) Unsupervised word embeddings capture latent knowledge 
+from materials science literature. Nature 571:95–98 
+4.  
+Bhati N, Dyson PJ, Nazeeruddin MK, Maréchal F (2026) Perovskite databases analysis using machine learning 
+and large language models for prediction and reverse engineering. Cell Rep Phys Sci 7: 
+5.  
+Kresse G, Furthmüller J (1996) Efficiency of ab-initio total energy calculations for metals and semiconductors 
+using a plane-wave basis set. Comput Mater Sci 6:15–50 
+6.  
+Giannozzi P, Baroni S, Bonini N, et al (2009) QUANTUM ESPRESSO: a modular and open-source software 
+project for quantum simulations of materials. J Phys Condens Matter 21:395502 
+7.  
+Hjorth Larsen A, Jørgen Mortensen J, Blomqvist J, et al (2017) The atomic simulation environment—a Python 
+library for working with atoms. J Phys Condens Matter 29:273002</pre></section><section class='page' id='page-21'><h2>Page 21</h2><pre>20 
+8.  
+Jain A, Ong SP, Hautier G, et al (2013) Commentary: The Materials Project: A materials genome approach to 
+accelerating materials innovation. APL Mater 1: 
+9.  
+Saal JE, Kirklin S, Aykol M, et al (2013) Materials design and discovery with high-throughput density 
+functional theory: the open quantum materials database (OQMD). Jom 65:1501–1509 
+10.  Smith A, Bhat V, Ai Q, Risko C (2022) Challenges in information-mining the materials literature: a case study 
+and perspective. Chem Mater 34:4821–4827 
+11.  Hu H, Stirrat HJ, Alayli A, et al (2025) AI-Powered Workflow for Constructing Organic Materials Databases 
+from the Literature: Integrating Large Language Models. ACS Omega 10:49545–49556 
+12.  Du P, Zhong X, Fang S, et al (2026) Bio-Inspired Halide Perovskite Photodetectors and Memristors. Adv 
+Funct Mater 36:e32096 
+13.  Horton MK, Huck P, Yang RX, et al (2025) Accelerated data-driven materials science with the Materials 
+Project. Nat Mater 24:1522–1532 
+14.  Liu X, Sun P, Chen S, et al (2025) Perovskite-LLM: Knowledge-Enhanced Large Language Models for 
+Perovskite Solar Cell Research. ArXiv Prepr ArXiv250212669 
+15.  Venugopal V, Olivetti E (2024) MatKG: An autonomously generated knowledge graph in Material Science. 
+Sci Data 11:217 
+16.  Kobayashi S, Kuwashiro N, Itoh F, et al (2024) Extraction of optimal synthesis conditions from scientific 
+literature using a knowledge graph. Sci Technol Adv Mater Methods 4:2395242 
+17.  Cai CT, Parker AJ, Barnard AS (2024) Graph representation of multi-dimensional materials. J Phys Mater 
+7:022005 
+18.  Beltagy I, Lo K, Cohan A (2019) SciBERT: A pretrained language model for scientific text. In: Proceedings of 
+the 2019 conference on empirical methods in natural language processing and the 9th international joint 
+conference on natural language processing (EMNLP-IJCNLP). pp 3615–3620 
+19.  Gupta T, Zaki M, Krishnan NA, Mausam (2022) MatSciBERT: A materials domain language model for text 
+mining and information extraction. Npj Comput Mater 8:102 
+20.  Zhang J, Zhang L, Sun Y, et al (2024) Named entity recognition in the perovskite field based on convolutional 
+neural networks and MatBERT. Comput Mater Sci 240:113014 
+21.  Polak MP, Modi S, Latosinska A, et al (2024) Flexible, model-agnostic method for materials data extraction 
+from text using general purpose language models. Digit Discov 3:1221–1235 
+22.  AROMSUK T, NETISOPAKUL P, NOOTYASKOOL S (2026) Improved Naive RAG by Integrated 
+Advanced Techniques: A Comprehensive Framework using Parent-Child Architecture, Hybrid Retrieval, and 
+Contextual Compression. IEICE Trans Inf Syst 2025DAP0003 
+23.  Liu Y, Cui Y, Zhou H, et al (2025) Machine learning-based methods for materials inverse design: a review. 
+Comput Mater Contin 82:1463–1492 
+24.  Krotkov NA, Sbytov DA, Chakhoyan AA, et al (2025) Nanostructured material design via a retrieval-
+augmented generation (rag) approach: Bridging laboratory practice and scientific literature. J Chem Inf Model 
+65:11064–11078</pre></section><section class='page' id='page-22'><h2>Page 22</h2><pre>21 
+25.  Zhang Q, He F, Hu K, Li J (2026) A study on question answering in the ceramics domain using large language 
+models with retrieved triples and generated textual knowledge prompts. Sci Rep 
+26.  Buehler MJ (2024) Generative retrieval-augmented ontologic graph and multiagent strategies for interpretive 
+large language model-based materials design. ACS Eng Au 4:241–277 
+27.  Yang Z, Xu  ,  an  ,  hen   (20  )  erformance evaluation of  a0.  r0.  o0.2 e0.7  0. O −δ as  oth 
+anode and cathode material in solid oxide fuel cells. Int J Hydrog Energy 39:7402–7406. 
+https://doi.org/10.1016/j.ijhydene.2014.01.009 
+28.  Durmaz AR, Thomas A, Mishra L, et al (2024) An ontology-based text mining dataset for extraction of 
+process-structure-property entities. Sci Data 11:1112 
+29.  Danappanavar MB, Pagidi RK, Cheedi M, Parimi DK (2026) LLM-Guided Extraction of Synthesis-
+Performance Relationships for Battery and Super-Capacitor Materials. In: 2026 6th International Conference 
+on Trends in Material Science and Inventive Materials (ICTMIM). IEEE, pp 16–20 
+30.  Zhang H, Song Y, Hou Z, et al (2024) Honeycomb: A flexible llm-based agent system for materials science. In: 
+Findings of the Association for Computational Linguistics: EMNLP 2024. pp 3369–3382 
+31.  He B, Wang Q, Jiang Z, et al (2026) A lifecycle-centered semantic toolkit for provenance-aware materials data 
+and workflows management. J Energy Chem 
+32.  Ye Y, Ren J, Wang S, et al (2024) Construction and application of materials knowledge graph in 
+multidisciplinary materials science via large language model. Adv Neural Inf Process Syst 37:56878–56897 
+33.  Chatterjee S, Sarkar S, Dey N, et al (2018) Hybrid non-dominated sorting genetic algorithm: II-neural network 
+approach. In: Advancements in applied metaheuristic computing. IGI Global Scientific Publishing, pp 264–286 
+34.  Deb K, Agrawal RB, others (1995) Simulated binary crossover for continuous search space. Complex Syst 
+9:115–148 
+35.  Zeng G-Q, Chen J, Li L-M, et al (2016) An improved multi-objective population-based extremal optimization 
+algorithm with polynomial mutation. Inf Sci 330:49–73</pre></section></main></body></html>

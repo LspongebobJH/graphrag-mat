@@ -1,0 +1,560 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>materials-terminology-kg</title><style>body{margin:0;background:#eef1f4;color:#20252b;font:16px/1.55 Georgia,serif}.document{max-width:920px;margin:32px auto}.page{background:#fff;margin:0 0 24px;padding:36px 48px;box-shadow:0 2px 10px #0001}h1{font:700 28px/1.2 system-ui,sans-serif}h2{font:600 15px system-ui,sans-serif;color:#65717d;border-bottom:1px solid #d9dee3;padding-bottom:8px}pre{white-space:pre-wrap;font:15px/1.55 Georgia,serif}@media(max-width:700px){.document{margin:0}.page{padding:24px 18px;margin-bottom:12px}pre{font-size:14px}}</style></head><body><main class="document"><h1>materials-terminology-kg</h1><section class="page"><h2>Page 1</h2><pre>1
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+A materials terminology knowledge 
+graph automatically constructed 
+from text corpus
+Yuwei Zhang1,6, Fangyi Chen1,6, Zeyi Liu   1,6, Yunzhuo Ju1, Dongliang Cui1, Jinyi Zhu1, 
+Xue Jiang   2,3,4 ✉, Xi Guo1,5 ✉, Jie He1,3 ✉, Lei Zhang2, Xiaotong Zhang1 &amp; Yanjing Su2
+A scalable, reusable, and broad-coverage unified material knowledge representation shows its 
+importance and will bring great benefits to data sharing among materials communities. A knowledge 
+graph (KG) for materials terminology, which is a formal collection of term entities and relationships, is 
+conceptually important to achieve this goal. In this work, we propose a KG for materials terminology, 
+named Materials Genome Engineering Database Knowledge Graph (MGED-KG), which is automatically 
+constructed from text corpus via natural language processing. MGED-KG is the most comprehensive KG 
+for materials terminology in both Chinese and English languages, consisting of 8,660 terms and their 
+explanations. It encompasses 11 principal categories, such as Metals, Composites, Nanomaterials, 
+each with two or three levels of subcategories, resulting in a total of 235 distinct category labels. For 
+further application, a knowledge web system based on MGED-KG is developed and shows its great 
+power in improving data sharing efficiency from the aspects of query expansion, term, and data 
+recommendation.
+Introduction
+Machine learning (ML) and artificial intelligence (AI) have demonstrated the power in speeding up new materi-
+als discovery in a cost-efficient manner1–9. Materials science data, as the foundation of ML-based and AI-based 
+materials discovery applications, has become a critical premise, and plenty of materials data infrastructures have 
+been established to collect, host, provide and analyze materials data to stakeholders7,10. The increasing capabili-
+ties of computational science in general have accelerated infrastructures becoming materials discovery platforms 
+such as Novel Materials Discovery (NOMAD)11, Automatic FLOW for Materials Discovery (AFLOW)12, the 
+Materials Project13, and Materials Cloud14. Open Databases Integration for Materials Design (OPTIMADE)15 
+provides a universal application programming interface (API) to make these heterogeneous platforms acces-
+sible and interoperable. There is also a massive surge in autonomous experiments and literature data, and the 
+concerns about long-term storage, integration and exchange over multi-source materials data are emerging 
+like Materials Data Facility (MDF)16 and MGEDATA17. Most of the state-of-art materials data infrastructures 
+concentrate on specific materials classification schemes by their functional properties (mechanical, optical, elec-
+tronic), topological characteristics (surface, bulk, nanoparticles), or by materials types (steel, ceramics, compos-
+ites). The alignment and fusion of material heterogeneous data across infrastructures is difficult. Therefore, a 
+scalable, reusable, and broad-coverage unified material knowledge representation shows its importance and will 
+bring great benefits to data sharing among materials communities.
+A knowledge graph (KG) for materials terminology, which is a formal collection of term entities and relation-
+ships, is conceptually important to achieve this goal. It is essential for enhancing the readability and maintain-
+ability of the materials data infrastructure, which provides a standardized naming approach for materials data, 
+unifying the vocabulary with different expressions into a single term to improve data consistency and facilitates 
+1School of Computer and Communication Engineering, University of Science and Technology Beijing, Beijing, 
+100083, China. 2Beijing Advanced Innovation Center for Materials Genome Engineering, Institute for Advanced 
+Materials and Technology, University of Science and Technology Beijing, Beijing, 100083, China. 3Liaoning Academy 
+of Materials, Shenyang, 110000, Liaoning, China. 4Shunde Innovation School, University of Science and Technology 
+Beijing, Guangdong, 528399, China. 5Beijing Key Laboratory of Knowledge Engineering for Materials, Beijing, 
+100083, China. 6These authors contributed equally: Yuwei Zhang, Fangyi Chen, Zeyi Liu. ✉e-mail: jiangxue@ustb.
+edu.cn; xiguo@ustb.edu.cn; hejie@ustb.edu.cn
+Article
+OPEN
+</pre></section><section class="page"><h2>Page 2</h2><pre>2
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+semantic reasoning and complex searches18. Furthermore, the KG for materials terminology maintains the 
+materials terms into a concept network, making it easier for researchers to share knowledge and incorporate the 
+existing knowledge into their current research. However, creating a well-knowledgeable KG for materials termi-
+nology in material science is a daunting task. A KG schema, which is usually represented by an ontology, must be 
+defined, including suitable formats and standards for encoding19,20. Currently, there are diverse ontologies and 
+informal standards being utilized in materials science. NOMAD Meta-info21, Experimental Structure-Property 
+Correlation Database Framework (ESCDF)22, and Open Knowledgebase of Interatomic Models (OpenKIM)23 
+are the first attempts to categorize computational results in atomistic materials science. Plinius ontology24 is the 
+earliest materials ontology which is developed for ceramic materials that covers the concept of the chemical 
+composition of materials. ONTORULE steel ontology is developed for the steel industry which aims to build the 
+conceptual model with the steel use case25. Semantic Laminated Composites Knowledge Management System 
+(SLACKS) ontology is developed for the engineering of laminated composites structures which integrates rel-
+evant domains of the product life cycle26. Battery Interface Ontology (BattINFO) is a foundational resource 
+for harmonizing battery knowledge representation and enhancing data interoperability (https://github.com/
+BIG-MAP/BattINFO). The Elementary Multiperspective Material Ontology (EMMO) aims at the development 
+of a standard representational ontology framework based on current materials modelling and characterization 
+knowledge (https://github.com/emmo-repo/EMMO)27. MatOnto, a machine-processable ontology, is used to 
+integrate data across disparate materials databases28. Physical Information File (PIF) provides a hierarchical data 
+structure for storing materials data29. Materials Ontology contains several sub-ontologies corresponding to sub-
+stance, process, environment, and property, offering a standard data exchange format between heterogeneous 
+databases30. MatOWL, short for Materials Ontology Web Language, is automatically constructed from available 
+materials schemas and can be mapped to other materials ontologies using logical rules31. The vast majority 
+of these ontologies are artificially created by material scientists in various sub-fields, with different structures 
+and standards. Fitting existing and novel data into such an ontological framework would still be a tedious, 
+human-intensive, and error-prone task for humans.
+Due to the rapid development of AI techniques, the construction of a material terminology KG has entered 
+a new era in the past few years, with a focus on automation. The open-source Python framework, Propnet32, 
+expands the existing materials property dataset by systematizing and connecting material properties. The 
+Materials Experiment Knowledge Graph (MekG)33 showcases the complete hierarchical relationships of mate-
+rial experiments in the form of a graph database. NanoMine34 leverages the Whyis knowledge graph framework 
+and integrates diverse data from over 1,700 polymer nanocomposite experiments. Materials Design Ontology35 
+establishes an information bridge among different data providers in computational materials science through its 
+ontological framework, facilitating interoperability among computational materials databases.
+By using semi-automatic and automatic extraction methods based on natural language processing (NLP) 
+techniques, domain experts can rapidly and in bulk extract terms and vocabulary from natural language text 
+corpus, significantly reducing the difficulty of KG construction36–39. Named entity recognition (NER) and rela-
+tion extraction tasks are considered as key components of this process. Recently, pipelines for automatic data 
+extraction of organic40,41, inorganic chemical substances37,38,42 and alloys39,43 from articles in the fields of chemis-
+try and materials science have been introduced using NLP techniques. With the advancement of large language 
+models (LLMs), MatKG44 is automatically generated, forming a comprehensive knowledge graph spanning 
+traditional material-structure-property-processing paradigms. These developments represent significant con-
+tributions to the ongoing evolution of materials science. In our previous work, we proposed an automatic NLP 
+pipeline for global analysis of data extracted from 14425 journal articles, capturing chemical compositions and 
+property data of superalloys39,45,46. AI tools and techniques can be used to simplify and automate the establish-
+ment of a well-knowledgeable terminology KG.
+In this work, we propose a KG for materials terminology, named Materials Genome Engineering Database 
+Knowledge Graph (MGED-KG), which is automatically constructed from text corpus by NLP. MGED-KG is 
+the most comprehensive KG for materials terminology in both Chinese and English languages with the amount 
+of 8,660 terms and their explanations, covering 11 principal categories of fundamentals of materials science, 
+metals, inorganic non-metallic materials, organic polymer materials, composites, information materials, bio-
+medical materials, energy materials, functional materials, natural materials and their products, and nanomate-
+rials. Each of the principal category encompasses two or three levels of subcategories, resulting in a total of 235 
+distinct category labels. We design an NLP-based automatic construction method of material terminology from 
+Comprehensive Dictionary of Materials (Second Edition)47 text corpus, starting from corpus preprocessing, 
+NER of term entities, relation construction among entities and finally forming MGED-KG.
+MGED-KG plays an important role in improving data sharing efficiency from the aspects of query expansion, 
+term, and data recommendation. In terms of query expansion, MGED-KG is used to complete and standard-
+ize user input automatically. For term recommendation, MGED-KG can help users to find more related terms 
+according to their focuses and explore more latent knowledge. To demonstrate the capability of MGED-KG 
+in data recommendation, we integrate it to our National Materials Data Management and Service platform 
+(NMDMS). NMDMS48 is a material database we developed in the early stages for the dissemination and shar-
+ing of heterogeneous materials science data. There are 12,251,040 pieces of data published in NMDMS since 
+2018, under 87 categories and 1,912 user-defined schemas from 45 projects. To leverage the term relationships, 
+MGED-KG is embedded into NMDMS platform to construct the correlation between data instances, which 
+helps realize the data instance recommendation based on their semantic similarities during data retrieval and 
+accelerates the valuable data discovery efficiently. We develop an ontology using RDF-based semantics for 
+MGED-KG, thereby facilitating cross-domain interoperability and comprehension. Our work lays an overall 
+foundation to build a unified and coherent material semantic KG for the underlying basic terminologies in 
+</pre></section><section class="page"><h2>Page 3</h2><pre>3
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+different material subfields. It powers great potential to accelerate materials data sharing and integration in a 
+wider range to facilitate data-driven materials research.
+Result
+Materials terminology extraction by text mining. 
+The semantic workflow of materials terminology 
+extraction, construction of MGED-KG and its application is shown in Fig. 1. The whole workflow starts from 
+corpus preprocessing, materials terminology extraction by text mining, terms classification and relation mapping, 
+followed by forming a MGED-KG web system. MGED-KG web system contains three application scenarios by 
+providing query expansion function, term and data recommendation coupled with materials database.
+We selected the classic paper corpus of the Comprehensive Dictionary of Materials (Second Edition) as 
+the original Chinese text corpus. This dictionary is renowned as the world’s first comprehensive dictionary of 
+materials science, authored by Academician Changxu Shi as the honorary editor, Chief Editor Boyun Huang, 
+and over 500 experts and scholars. The raw paper corpus was scanned and transferred into electronic corpus 
+by optical character recognition (OCR) technique to make it readable by computer. Subsequently, text preproc-
+essing was carried out to ensure the quality of the corpus. This included converting full-width characters to 
+half-width characters, converting uppercase to lowercase, filtering out line breaks, headers, and footers on each 
+page, followed by manual proofreading and correction.
+For terminology extraction, a rule-based NER method was utilized after paragraphs segmentation. For each 
+paragraph, it consists of a Chinese material term, its English version, and its explanation. Regular expression 
+was tailored for terms and their explanations recognition. Totally, a dataset of Chinese-English material termi-
+nology, containing 8,660 terms and their explanations, was obtained and the precision of NER achieved 98.74% 
+by manual check.
+To further construct the structure of MGED-KG, terms classification was first achieved. Materials category 
+labels were assigned to each term entity determined by the catalog of Comprehensive Dictionary of Materials 
+(Second Edition). The terminology classification is hierarchical in three levels, with a total of 235 category labels. 
+The first level comprises fundamentals of materials science, metals, inorganic non-metallic materials, organic 
+polymer materials, composites, information materials, energy materials, biomedical materials, natural materials 
+and their products, functional materials, as well as nanomaterials. And for the second and third level, the term 
+categories are more nuanced. For example, the term “ferrovanadium” has the category label of “metals -&gt;steels 
+-&gt; iron”. Figure 2 shows the hierarchical classification structure of MGED-KG with first two levels of categories 
+and the number of third level categories below them. The hierarchical classification of terms will further act as 
+the ontology of MGED-KG. Next, relationships between terms are automatically captured, that is, if other terms 
+appear in the explanatory text of a term, then the term is automatically associated with other terms. Therefore, 
+the term linkage at the knowledge level is established, which can be used as the MGED-KG entity relation.
+Fig. 1  The semantic workflow of materials terminology extraction, construction of MGED-KG and its 
+application.
+</pre></section><section class="page"><h2>Page 4</h2><pre>4
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+MGED-KG visualization. 
+MGED-KG encompasses not only the classification and explanation of material 
+terms but also the semantic relationships and interactions between terms. Figure 3 provides an overview of the 
+structure of MGED-KG. The left part shows the schema of ontology, and right part illustrates some instances 
+related to the terms and categories. The “Category” class represents high-level conceptual classifications within 
+the field of materials science, such as “Metals”, “Fundamentals of Materials Science”, “Steels”, “Non-ferrous metals”, 
+and “Material property basics”. Each “Category” can be further refined into subcategories, with the “subclassOf” 
+relationship expressing the hierarchical structure between classes. For example, “Steels” can be further classified 
+with “Non-alloy steels”, “Iron”, “Alloy steels”, etc. Within “Category”, the “hasProperty” relationship points to the 
+category’s English name and Chinese name. The “Term” class represents the specialized terminology of materials 
+science, describing attributes such as the types, structures, methods, applications, or properties of materials. The 
+“hasProperty” relationship for “Terms” points to the term’s English name, Chinese name, English explanation, 
+and Chinese explanation. Each “Term” is assigned to a specific term “Category”, with the “isAKindOf” relation-
+ship establishing a clear belonging relationship. For instance, “ferroalloy” is a kind of “Iron”, and “superplasticity” 
+is a kind of “Material property basics”. The “isRelatedTo” relationship between “Term” entities reveals the seman-
+tic connections between terms, enhancing the understanding of complex interactions among entities within the 
+field of materials science.
+MGED-KG system. 
+With the support of web technologies, MGED-KG can be distributed in a digital form 
+through online platform. We used the Django framework (https://www.djangoproject.com/), which is a highly 
+scalable Python web framework that can quickly develop and deploy complex web applications, to construct 
+a MGED-KG system(http://mged.nmdms.ustb.edu.cn/MGEDKG/) for data standardization and terminology 
+sharing among materials community. The MGED-KG system includes functional modules of term catalog, term 
+retrieval, term recommendation and data recommendation associated with NMDMS database. The term catalog 
+function provides navigation of 8,660 terms organized by three-level hierarchical structure. The term retrieval 
+function provides a gateway for discovering materials terms and their explanations. Figure 4 shows the result list 
+filtered by term catalog navigation, and Fig. 5 provides an example of a term page.
+Fig. 2  The visualization of MGED-KG in hierarchical structure with first two levels of categories and the 
+number of third level categories below them.
+</pre></section><section class="page"><h2>Page 5</h2><pre>5
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+Discussion
+Due to the benefits of the knowledge graph, MGED-KG can effectively reduce the difficulty of materials ter-
+minology reuse in a semantic knowledge repository and enhance the possibility of effective collaboration. This 
+allows engineers, researchers, and other professionals in different material domains to quickly transform knowl-
+edge into required format and aid in the utilization of knowledge within intelligent systems. To demonstrate its 
+capability, MGED-KG was successfully applied to three scenarios regarding query expansion, term, and data 
+recommendation, as shown in Fig. 6.
+Query expansion. 
+MGED-KG can be used to complete and standardize user input automatically, and signif-
+icantly improve the user experience when retrieving material terms. It automatically recommends potential terms 
+related to a user’s input which may be only a part of a term. For example, when a user enters “all” as a query term, 
+the system automatically suggests possible query expansion terms such as “allanite”, “allotropism”, “alloy”, “alloy 
+cast iron”, and “alloy for magnetic temperature compensation”. Figure 7 shows the query expansion function for 
+user input completion, standardization, and data retrieval in MGED-KG system.
+Fig. 3  MGED-KG Material Knowledge Graph Structure Diagram.
+Fig. 4  An example of term catalog. The left section of the page is the three-level hierarchical categories, and the 
+right section shows there are 20 material terms under the classification of metal material “Iron”.
+</pre></section><section class="page"><h2>Page 6</h2><pre>6
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+Elasticsearch (ES) (https://www.elastic.co/cn/elasticsearch/) is a distributed search engine based on inverted 
+indexes which helps to build an index of material terms for autocompletion for query expansion. ES provides the 
+completion suggester feature, which leverages inverted indexes to construct a specialized data structure called a 
+completion index. ES comes with various built-in analyzers, but these analyzers are not particularly suitable for 
+materials terminology corpus, as they do not segment text according to materials terminology conventions. The 
+Lucene IK analyzer, on the other hand, is a standard Chinese text analyzer. It segments text based on a defined 
+Fig. 5  An example of a term page, containing the Chinese and English name (in parentheses) of the term, the 
+explanation, and the classification. In the right section, there are related terms that associate with current term 
+according to the term relation in MGED-KG. A language switch button for “Explanation” is provided, offering 
+term explanations in Chinese and English. Additionally, clicking on terms with underlines in the explanation 
+allows users to directly navigate to the detailed page for that specific term.
+Fig. 6  MGED-KG applications from query expansion, term, and data recommendation aspects.
+</pre></section><section class="page"><h2>Page 7</h2><pre>7
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+dictionary for a field and supports user-configurable custom dictionaries. Therefore, we have used the previ-
+ously extracted material terms as a custom lexicon. We integrated the Lucene IK analyzer into ES using the IK 
+Analysis plugin to achieve improved segmentation results. In this way, the precision, recall and F1 score of word 
+segmentation for material terms has been successfully increased by 18.72%, 8.91% and 14.15%, respectively. 
+When documents are indexed, ES extracts partial or complete text from specified fields and adds them to the 
+completion index. When a user enters a query, ES sends a completion suggestion query request to search for rel-
+evant completion suggestions in the completion index. ES returns a list of completion results related to the user’s 
+input, including matching phrases or suggested autocompletion terms, based on the query content and settings. 
+The query expansion functionality enables the system to quickly respond and provide relevant autocompletion 
+suggestions during the user input process, thereby enhancing search experience and query precision.
+Term and data recommendation. 
+The terminology recommendation feature aims to enhance informa-
+tion retrieval and knowledge acquisition in the materials domain. This feature leverages the MGED-KG, which we 
+have constructed, to automatically recommend a list of related terms. For example, as shown in Fig. 8, when a user 
+enters a term for retrieval, such as “ferromolybdenum”, our system automatically provides a list of terms related to 
+“ferromolybdenum”, including “bainite”, “stainless steel”, “hardenability”, “pitting corrosion”, “steel”, “high-speed 
+steel”, “tool steel”, “ferrosilicon”, “alloy”, “alloy steel”, “alloy structural steel”, “tempering”, “coke”, “structural steel”, 
+“heat resistant steel”, and “cast iron”. During terminology recommendation, we utilized the connections and asso-
+ciations within the knowledge graph to infer terms relevant quickly and accurately to the user’s input. Through 
+this approach, our system can provide a more comprehensive and precise list of terms, aiding users in better 
+understanding and accessing knowledge in the materials domain.
+Furthermore, MGED-KG has been embedded into NMDMS platform to construct the correlation between 
+data instances, which help realize the data recommendation during data retrieval and accelerate the valuable 
+data discovery efficiently. For example, when the keyword “single crystal” in English or “单晶” in Chinese 
+is retrieved in NMDMS platform, there are totally 124 data instances hit by the retrieval. At the same time, 
+Fig. 7  Query expansion function for user input completion, standardization, and data retrieval in MGED-KG 
+system.
+Fig. 8  Term recommendation by MGED-KG.
+</pre></section><section class="page"><h2>Page 8</h2><pre>8
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+MGED-KG system automatically returns a term list containing “single crystal” and then send these related terms 
+to NMDMS platform again for related data instances retrieval.
+The implementation of the data recommendation functionality is also based on ES engine. We have con-
+structed a specialized ES index in NMDMS platform dedicated to the materials domain, which contains a large 
+volume of materials data and their related properties. When a user enters a keyword, we utilize the search capa-
+bility of ES to quickly retrieve data matching the keyword from the index. Through fast search and interactive 
+access to data details, users can conveniently access the required materials data, effectively supporting their 
+research and decision-making processes. Figure 9 shows an example of data retrieval in NMDMS and in the 
+result there are recommended data instances by related terms in the left section the of web page.
+Methods
+Corpus acquisition and preprocessing. 
+In our research, we chose the paper book of the Comprehensive 
+Dictionary of Materials (Second Edition) as the original text corpus. We obtained the electronic version by scan-
+ning it. Subsequently, we processed the images in the electronic version in batches and extracted the text content 
+from them. Extracting text from images requires two steps: image processing and OCR. In the first step, we pre-
+processed the images to remove noise and unnecessary information and improve the recognition rate of OCR. 
+Then, we used OCR technology to recognize the text information in the images and convert it into editable text 
+format. OCR recognition technology can convert characters in images into computer-readable character codes. 
+However, due to the existence of some special characters and non-standard text in the original text corpus, the 
+precision of OCR recognition is not high enough, and further preprocessing was done. This process includes 
+the conversion of special characters. For example, fullwidth to halfwidth, uppercase to lowercase, unity between 
+numbers, letters and Chinese, and filter and process information such as line breaks, header, and footer in the text 
+to get more orderly text data. For some complex images, OCR technology may not be able to correctly recognize 
+special characters, so we manually corrected them and checked for grammar and spelling errors to ensure recog-
+nition precision.
+NER of terms. 
+This study utilized a set of regular expressions to achieve NER of terms in the Comprehensive 
+Dictionary of Materials (Second Edition) corpus. A primary regular expression consisted of combinations of 
+Chinese characters and alphanumeric characters. To handle some special cases, we also used four additional reg-
+ular expressions that consider special symbols such as plus and minus signs, degree symbols, Greek letter gamma. 
+There were specific expressions for matching terms that include Roman numerals in their Chinese parts and for 
+matching terms that do not contain English. Additionally, the explanations for the terms started with the char-
+acter “见” (meaning “see”). By applying this set of regular expressions, we accurately extracted the target terms 
+and their corresponding explanations effectively. The accuracies of each kind of terms are listed in Table 1 and the 
+total average of NER precision reaches 98.74%.
+The comparison of word segmentation in Elasticsearch. 
+We tested the precision of word segmentation 
+before and after adding MGED-KG into ES for materials text. We selected a certain number of term explanations 
+from the corpus as the dataset, imported the dataset into the ES database and created the corresponding index. 
+To facilitate comparison, two indexes were created at the same time, one did not use MGED-KG and the other 
+used. For indexes without MGED-KG, we used the default ES word divider for word segmentation. For indexes 
+with MGED-KG, we added the custom material term dictionary to ES and use the custom word divider for word 
+segmentation. In order to ensure the reliability of the experiment, multiple different datasets were used for the 
+experiment, and the experiment was repeated many times to obtain more stable results. At the same time, datasets 
+were selected to cover different classification of material terms to obtain more comprehensive experimental results.
+Fig. 9  An example of data retrieval in NMDMS platform with data recommendation.
+</pre></section><section class="page"><h2>Page 9</h2><pre>9
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+To compare the segmentation effects of the two indexes, Precision, recall, and F1 score based on the confusion 
+matrix were used as the metrics. Precision refers to the proportion between the number of correct material terms 
+in the word segmentation results and the total number of word segmentation results, and recall rate refers to the 
+proportion between the number of correct material terms in the word segmentation results and the number of 
+all marked material terms. The F1 score, which weights precision and recall equally, as calculated from Eq. (1), 
+can be used to measure the harmonic average of precision and recall.
+F1 score
+2
+Precision
+Recall
+Precision
+Recall
+(1)
+=
+∗
+∗
++
+Table 2 shows the details of precision, recall and F1 score before and after using MGED-KG in ES. The pre-
+cision, recall and F1 score of word segmentation for material terms has been successfully increased by 18.72%, 
+8.91% and 14.15%, respectively, after adding MGED-KG into ES.
+Data availability
+MGED-KG are available at http://mged.nmdms.ustb.edu.cn/MGEDKG/.
+The corpus and ontology repository are accessible at Zenodo49.
+Code availability
+The MGED-KG project is available at Zenodo49 https://zenodo.org/records/11315713.
+This code is written in Python language, uses Django, Elasticsearch and other open-source libraries, and is 
+compatible with a variety of operating systems, such as Windows, Linux. We provide detailed deployment steps 
+and installation documentation so that users can quickly set up an environment and run code. We also maintain 
+and update the code regularly to ensure its stability and availability.
+Received: 3 August 2023; Accepted: 31 May 2024;
+Published: xx xx xxxx
+References
+	 1.	 Wen, C. et al. Machine learning assisted design of high entropy alloys with desired property. Acta Materialia 170, 109–117 (2019).
+	 2.	 Tshitoyan, V. et al. Unsupervised word embeddings capture latent knowledge from materials science literature. Nature 571, 95–98 (2019).
+	 3.	 Lookman, T., Balachandran, P. V., Xue, D. &amp; Yuan, R. Active learning in materials science with emphasis on adaptive sampling using 
+uncertainties for targeted design. npj Computational Materials 5, 21 (2019).
+	 4.	 Jiang, X., Yan, Y. &amp; Su, Y. Data-driven pitting evolution prediction for corrosion-resistant alloys by time-series analysis. npj Materials 
+Degradation 6, 92 (2022).
+	 5.	 Jiang, X., Wang, Y., Jia, B., Qu, X. &amp; Qin, M. Using Machine Learning to Predict Oxygen Evolution Activity for Transition Metal 
+Hydroxide Electrocatalysts. ACS Applied Materials &amp; Interfaces 14, 41141–41148 (2022).
+	 6.	 Jiang, X. et al. A strategy combining machine learning and multiscale calculation to predict tensile strength for pearlitic steel wires 
+with industrial data. Scripta Materialia 186, 272–277 (2020).
+No.
+Regular expression
+Regular expression application
+Examples (Chinese Term - English 
+Term)
+Number of 
+terms hit
+Terms in 
+total
+Precision
+1
+^([-A-Za-z0-9]*[-\u4e00-\u9fa5: 
+/]+)[\s]*([-A-Za-z]+[-\s“A-Za-z0-9;
+；:()/]+[A-Za-z0-9]+)
+Matching combinations of Chinese and 
+alphanumeric characters
+X射线荧光谱 X-ray fluorescence 
+spectroscopy
+7371
+8660
+85.12%
+2
+^([-\u4e00-\u9fa5,()/A-Za-z0-9±°γ]+)
+[\s]+([-\sA-Za-z0-9,;()/δ±°γ]+[A-
+Za-z0-9()]+)
+Matching special symbols
+1,1-二氨基-2,2-二硝基乙烯 FOX-7
+74
+0.85%
+3
+^([\u4e00-\u9fa5]+): ((([\u4e00-\
+u9fa5]+)[((](I|II|III)[))]), (([\
+u4e00-\u9fa5]+)[((](I|II|III)[))]))
+[\s]*([-A-Za-z]+[-\s“A-Za-z0-9;
+；:()/]+[A-Za-z0-9]+)
+Matching cases where the Chinese part 
+of the term includes Roman numerals
+正磷酸锶锌: 锡 (II),锰 (II) strontium 
+zinc orthophosphate activated by tin 
+and manganese
+26
+0.30%
+4
+^([\u4e00-\u9fa5]+): (([\
+u4e00-\u9fa5]+)[((](I|II|III)[))])
+[\s]*([-A-Za-z]+[-\s“A-Za-z0-9;
+；:()/]+[A-Za-z0-9]+)
+Matching cases where the Chinese part 
+of the term does not include Roman 
+numerals
+硫化锌: 锰 (I) zinc sulfide activated by 
+manganese
+60
+0.69%
+5
+^([-\u4e00-\u9fa5,0-9A-Za-zX]+)
+[\s]*见
+Matching terms that do not include 
+English and the explanation of the term 
+starts with “见”
+白焊合金 见银焊合金 (861页)
+1020
+11.78%
+Total
+8551
+98.74%
+Table 1.  The NER rules and precision of material terms.
+Precision (Without 
+MGED-KG)
+Precision (With 
+MGED-KG)
+Recall (Without 
+MGED-KG)
+Recall (With 
+MGED-KG)
+F1 score (Without 
+MGED-KG)
+F1 score (With 
+MGED-KG)
+Average
+63.26%
+72.45%
+77.65%
+83.30%
+0.69
+0.77
+Increased
+14.53%
+7.28%
+11.59%
+Table 2.  The precision, recall and F1 score before and after using MGED-KG in Elasticsearch.
+</pre></section><section class="page"><h2>Page 10</h2><pre>10
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+	 7.	 Himanen, L., Geurts, A., Foster, A. S. &amp; Rinke, P. Data‐driven materials science: status, challenges, and perspectives. Advanced 
+Science 6, 1900808 (2019).
+	 8.	 Hart, G. L., Mueller, T., Toher, C. &amp; Curtarolo, S. Machine learning for alloys. Nature Reviews Materials 6, 730–755 (2021).
+	 9.	 Esterhuizen, J. A., Goldsmith, B. R. &amp; Linic, S. Interpretable machine learning for knowledge generation in heterogeneous catalysis. 
+Nature Catalysis 5, 175–184 (2022).
+	10.	 Zhu, L., Zhou, J. &amp; Sun, Z. Materials data toward machine learning: advances and challenges. The Journal of Physical Chemistry 
+Letters 13, 3965–3977 (2022).
+	11.	 Scheidgen, M. et al. NOMAD: A distributed web-based platform for managing materials science research data. Journal of Open 
+Source Software 8, 5388 (2023).
+	12.	 Esters, M. et al. aflow. org: A web ecosystem of databases, software and tools. Computational Materials Science 216, 111808 (2023).
+	13.	 Jain, A. et al. Commentary: The Materials Project: A materials genome approach to accelerating materials innovation. APL materials 
+1 (2013).
+	14.	 Talirz, L. et al. Materials Cloud, a platform for open computational science. Scientific Data 7, 299 (2020).
+	15.	 Andersen, C. W. et al. OPTIMADE, an API for exchanging materials data. Scientific Data 8, 217 (2021).
+	16.	 Blaiszik, B. et al. A data ecosystem to support machine learning in materials science. MRS Communications 9, 1125–1133 (2019).
+	17.	 Liu, S. et al. An infrastructure with user-centered presentation data model for integrated management of materials data and services. 
+Npj Computational Materials 7, 88 (2021).
+	18.	 Clark, S. et al. Toward a unified description of battery data. Advanced Energy Materials 12, 2102702 (2022).
+	19.	 Davies, J., Fensel, D. &amp; Van Harmelen, F. Towards the semantic web. Ontology-Driven Knowledge Management (2003).
+	20.	 McGuinness, D. L. &amp; Van Harmelen, F. OWL web ontology language overview. W3C recommendation 10, 2004 (2004).
+	21.	 Ghiringhelli, L. M. et al. Towards efficient data exchange and sharing for big-data driven materials science: metadata and data 
+formats. npj computational materials 3, 46 (2017).
+	22.	 Oliveira, M. J. et al. The CECAM electronic structure library and the modular software development paradigm. The Journal of 
+chemical physics 153 (2020).
+	23.	 Tadmor, E. B., Elliott, R. S., Sethna, J. P., Miller, R. E. &amp; Becker, C. A. The potential of atomistic simulations and the knowledgebase 
+of interatomic models. Jom 63, 17 (2011).
+	24.	 van der Vet, P. E., Speel, P.-H. &amp; Mars, N. J. The Plinius ontology of ceramic materials. Eleventh European Conference on Artificial 
+Intelligence (ECAI’94) Workshop on Comparison of Implemented Ontologies, 8–12 (1994).
+	25.	 de Sainte Marie, C., Iglesias Escudero, M. &amp; Rosina, P. The ONTORULE project: where ontology meets business rules. Web Reasoning 
+and Rule Systems: 5th International Conference, RR 2011, Galway, Ireland, August 29-30, 2011. Proceedings 5, 24–29 (2011).
+	26.	 Premkumar, V., Krishnamurty, S., Wileden, J. C. &amp; Grosse, I. R. A semantic knowledge management system for laminated 
+composites. Advanced engineering informatics 28, 91–101 (2014).
+	27.	 Adamovic, N. et al. European materials modelling council. Proceedings of the 4th World Congress on Integrated Computational 
+Materials Engineering (ICME 2017), 79–92 (2017).
+	28.	 Cheung, K., Drennan, J. &amp; Hunter, J. Towards an Ontology for Data-driven Discovery of New Materials. AAAI Spring Symposium: 
+Semantic Scientific Knowledge Integration, 9–14 (2008).
+	29.	 Michel, K. &amp; Meredig, B. Beyond bulk single crystals: a data format for all materials structure–property–processing relationships. 
+Mrs Bulletin 41, 617–623 (2016).
+	30.	 Ashino, T. Materials ontology: An infrastructure for exchanging materials information and knowledge. Data Science Journal 9, 
+54–61 (2010).
+	31.	 Zhang, X., Hu, C. &amp; Li, H. Semantic query on materials data based on mapping MATML to an OWL ontology. Data Science Journal 
+8, 1–17 (2009).
+	32.	 Mrdjenovich, D. et al. Propnet: a knowledge graph for materials science. Matter 2, 464–480 (2020).
+	33.	 Statt, M. J., Rohr, B. A., Guevarra, D., Suram, S. K. &amp; Gregoire, J. M. The materials experiment knowledge graph. Digital Discovery 2, 
+909–914 (2023).
+	34.	 McCusker, J. &amp; Keshan, N. NanoMine: A Knowledge Graph for Nanocomposite Materials Science, Lecture Notes in Computer 
+Science, vol 12507, https://doi.org/10.1007/978-3-030-62466-8_10. International Semantic Web Conference, ISBN: 978-3-030-62466-8 
+12507 (2020).
+	35.	 Lambrix, P. et al. The materials design ontology. Semantic Web, 1–35 (2023).
+	36.	 Mehr, S. H. M., Craven, M., Leonov, A. I., Keenan, G. &amp; Cronin, L. A universal system for digitization and automatic execution of 
+the chemical synthesis literature. Science 370, 101–108 (2020).
+	37.	 Court, C. J. &amp; Cole, J. M. Magnetic and superconducting phase diagrams and transition temperatures predicted using text mining 
+and machine learning. npj Computational Materials 6, 18 (2020).
+	38.	 Court, C. J. &amp; Cole, J. M. Auto-generated materials database of Curie and Néel temperatures via semi-supervised relationship 
+extraction. Scientific data 5, 1–12 (2018).
+	39.	 Wang, W. et al. Automated pipeline for superalloy data by text mining. NPJ Computational Materials 8, 9 (2022).
+	40.	 Swain, M. C. &amp; Cole, J. M. ChemDataExtractor: a toolkit for automated extraction of chemical information from the scientific 
+literature. Journal of chemical information and modeling 56, 1894–1904 (2016).
+	41.	 Kim, E. et al. Inorganic materials synthesis planning with literature-trained neural networks. Journal of chemical information and 
+modeling 60, 1194–1201 (2020).
+	42.	 Jensen, Z. et al. A machine learning approach to zeolite synthesis enabled by automatic literature data extraction. ACS central science 
+5, 892–899 (2019).
+	43.	 Kumar, P., Kabra, S. &amp; Cole, J. M. auto-generating databases of Yield Strength and Grain Size using ChemDataExtractor. Scientific 
+Data 9, 292 (2022).
+	44.	 Venugopal, V. &amp; Olivetti, E. MatKG: An autonomously generated knowledge graph in Material Science. Scientific Data, 11(1), 217 (2024).
+	45.	 Wang, W. et al. Alloy synthesis and processing by semi-supervised text mining. npj Computational Materials 9, 183 (2023).
+	46.	 Yan, R., Jiang, X., Wang, W., Dang, D. &amp; Su, Y. Materials information extraction via automatically generated corpus. Scientific Data 
+9, 401 (2022).
+	47.	 Huang, B. Comprehensive Dictionary of Materials (Second Edition). (Chemical Industry Press, 2016).
+	48.	 Gong, H. et al. A repository for the publication and sharing of heterogeneous materials data. Scientific Data 9, 787 (2022).
+	49.	 Yuwei, Z. et al. A materials terminology knowledge graph automatically constructed from text corpus. Zenodo https://doi.
+org/10.5281/zenodo.11315713 (2024).
+Acknowledgements
+This work is financially supported by the National Key Research and Development Program of China 
+(2021YFB3702403, 2022YFB3707502), National Natural Science Foundation of China (52201061, U22A20106), 
+Foshan Science and Technology Innovation Special Foundation (BK22BF001), Foshan Higher Education 
+Advanced Talents Foundation (BKBS202203), Guangdong Basic and Applied Basic Research Foundation 
+(2023A1515140101), Fundamental Research Funds for the Central Universities (FRF-TP-22-008A1 and FRF-
+EYIT-23-02).
+</pre></section><section class="page"><h2>Page 11</h2><pre>11
+Scientific Data |          (2024) 11:600  | https://doi.org/10.1038/s41597-024-03448-0
+www.nature.com/scientificdata
+www.nature.com/scientificdata/
+Author contributions
+J.H. conceived the project. The study was designed by J.H. and X.J., text mining programs were performed by Y.Z., 
+Z.L., the manuscript prepared by Y.Z., Z.L., F.C., Y.J., D.C. and J.Z. Y.Z. and Z.L. contributed equally to this work. 
+All authors discussed the results and commented on the manuscript.
+Competing interests
+The authors declare no competing interests.
+Additional information
+Correspondence and requests for materials should be addressed to X.J., X.G. or J.H.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and 
+institutional affiliations.
+Open Access This article is licensed under a Creative Commons Attribution 4.0 International 
+License, which permits use, sharing, adaptation, distribution and reproduction in any medium or 
+format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Cre-
+ative Commons licence, and indicate if changes were made. The images or other third party material in this 
+article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the 
+material. If material is not included in the article’s Creative Commons licence and your intended use is not per-
+mitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the 
+copyright holder. To view a copy of this licence, visit http://creativecommons.org/licenses/by/4.0/.
+ 
+© The Author(s) 2024
+</pre></section></main></body></html>

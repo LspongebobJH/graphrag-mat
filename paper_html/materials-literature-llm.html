@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>materials-literature-llm</title>
+<style>body{margin:0;background:#eef1f4;color:#20252b;font:16px/1.55 Georgia,serif}.document{max-width:920px;margin:32px auto}.page{background:#fff;margin:0 0 24px;padding:36px 48px;box-shadow:0 2px 10px #0001}h1{font:700 28px/1.2 system-ui,sans-serif}h2{font:600 15px system-ui,sans-serif;color:#65717d;border-bottom:1px solid #d9dee3;padding-bottom:8px}pre{white-space:pre-wrap;font:15px/1.55 Georgia,serif}@media(max-width:700px){.document{margin:0}.page{padding:24px 18px;margin-bottom:12px}pre{font-size:14px}}</style></head><body><main class="document"><h1>materials-literature-llm</h1><section class="page"><h2>Page 1</h2><pre>communications materials
+Article
+A Nature Portfolio journal
+https://doi.org/10.1038/s43246-025-01043-3
+Extracting and reconstructing knowledge
+in materials science literature using large
+language models
+Check for updates
+Shuyuan Li, Shihao Wei, Chenyu Huang
+, Yunjiang Zhang, Guizhen Zhang
+&amp; Shaorui Sun
+Knowledge reconstruction is required for both existing and new material discovery. However, this
+process faces signiﬁcant challenges, especially in ensuring the completeness and logical consistency
+of extracted information. We present a generalized method that can be used to reconstruct knowledge
+from inorganic science literature regarding synthetic routes and properties. Using a one-prompt
+design, a comprehensive dataset was built with the GPT-4 model, which was subsequently used to
+ﬁne-tune four large language models (LLMs), including LLaMA3-8B-instruct (Llama), Gemma-7B
+(Gemma), Phi3-mini-128k-instruct (Phi), GPT3.5-turbo-1106 (GPT). The ﬁne-tuned models
+demonstrated a strong capability in reconstructing synthetic routes for selective catalytic reduction
+(SCR). The information extraction (IE) process achieved high performance on the task of material
+synthesis route extraction, with a precision of 0.928, a recall of 0.957, and an F1 score of 0.962. The
+ﬁne-tuned models were then used for large-scale IE, extracting 48,925 entities from 2205 articles. Due
+to the JSON structure of the initial GPT-4-constructed dataset, the extracted data was stored in the
+same format, providing a valuable resource for further research. The four ﬁne-tuned LLMs were
+transferred to ﬁve other domains, including lithium-ion batteries (Li-ion), hydrogen evolution reaction
+(HER), oxygen reduction reaction (ORR), oxygen evolution reaction (OER), and methanol steam
+reforming (MSR), to test the generalized performance of the ﬁne-tuned LLMs. The results show that the
+ﬁne-tuned LLMs have high transferability across domains and can be applied to a wide range of
+materials science tasks. Ultimately, a comprehensive knowledge graph was constructed by
+integrating multiple entities (nodes) including article metadata, catalysts, preparation methods, raw
+materials, synthesis steps, synthesis conditions and performance metrics. These nodes are
+interconnected through various relational edges (such as synthesis method, synthesis action,
+temperature, pressure, time, atmosphere, equipment, conversion, selectivity, activity) that represent
+explicit physicochemical dependencies, procedural parameters, and performance correlations. This
+structured framework enables the efﬁcient exploration of intricate relationships within materials
+science literature, thereby facilitating the rapid identiﬁcation of high-performance catalysts and the
+data-driven optimization of synthesis.
+The synthesis of new materials is the key to promoting scientiﬁc and
+technological progress1. However, materials synthesis presents signiﬁcant
+challenges. The complexity of materials science requires that researchers
+possess extensive foundational knowledge in physics and chemistry, as well
+as proﬁciency in advanced experimental and computational methods.
+Moreover, materials are inﬂuenced by various factors during synthesis
+process, such as temperature, pressure, and chemical environment. For
+instance, SCR catalysts are commonly prepared via impregnation, pre-
+cipitation, and sol-gel methods, each differing in raw materials, synthesis
+procedures, and reaction conditions. Minor deviations, such as subtle
+Department of Chemical Engineering and Technology, College of Materials Science and Engineering, Beijing University of Technology, Beijing, 100124, China.
+e-mail: zhangguizhen@bjut.edu.cn; sunsr@bjut.edu.cn
+Communications Materials | (2026) 7:31 
+1
+1234567890():,;
+1234567890():,;
+</pre></section><section class="page"><h2>Page 2</h2><pre>variations in solvent ratios and dissolution sequences during raw material
+solutions preparation, may lead to structural differences. The order of steps,
+active component loading and support shaping, or the sequence of pre-
+cursor addition during co-precipitation, directly impact catalyst efﬁciency.
+These factors can inﬂuence the performance of materials, complicating
+research efforts. As the complexity of material composition and micro-
+structure increases, traditional material discovery methods, including
+experimental trial-and-error approaches and theoretical computational
+methods are increasingly exhibiting limitations in terms of development
+cost, efﬁciency, and time2.
+Data-driven artiﬁcial intelligence (AI) has developed rapidly and
+played an important role in various ﬁelds3. The advantagesof AI technology
+in materials design are becoming increasingly prominent, and the integra-
+tion of AI and big data is being called the “fourth industrial revolution”4,5.
+These capabilities are primarily driven by machine learning (ML), enabling
+data-driven pattern recognition and predictive modeling. Various ML
+techniques, including regression models6–8, classiﬁcation models9,10, neural
+networks11, reinforcement learning12, and graph neural networks13, have
+been widely applied in materials development such as lithium batteries14,15,
+metal-organic frameworks16,17, chemical reactions18, and materials design19.
+The training of ML models relies on a vast amount of reliable and nor-
+malized scientiﬁc data, which are mainly derived from existing databases,
+experimental or computational results from researchers’ laboratories, and
+scientiﬁc literature published by other researchers20,21. In particular, scien-
+tiﬁc literature usually contains rich information on detailed experimental
+procedures, conditions, and observations22. In addition, these sources
+contain the latest peer-reviewed research results and innovative methods,
+with high reliability and credibility. Therefore, effectively mining and
+organizinginformation fromthematerialsliteratureiscriticalforadvancing
+data-driven materials research. Unfortunately, manually extracting and
+reconstructing knowledge from scientiﬁc literature is a labor-intensive
+process, which hinders the efﬁcient acquisition of valuable insights.
+In recent years, natural language processing (NLP) techniques have
+been successfully applied to extract scientiﬁc literature data in the ﬁelds of
+chemistry23,24, medicine, biology25, and materials science26, mining a large
+amountofexcellentdata.TheapplicationofNLPtechniqueshasaccelerated
+ontology development in materials science. Bayerlein et al.27 employed an
+NLP-driven ontology development approach to provide a standardized
+semanticframeworkfortheﬁeld ofmaterialssciencemicroscopy,effectively
+addressing issues of terminology ambiguity and retrieval efﬁciency, and
+advancing the application of FAIR (Findability, Accessibility, Interoper-
+ability, Reusability) data management principles in experimental science.
+Traditionally, specialized NLP methods including dictionary matching,
+rules, ML and deep learning models have been employed to solve this issue
+related to IE and semantic standardization. Liu et al.28 utilized rule-based
+and domain dictionaries framework to extract valuable domain knowledge
+from abstracts of scientiﬁc literature, with a particular focus on Ni-based
+single crystal superalloys. Li et al.23 designed rules to extract catalyst
+synthesis data from scientiﬁc literature, speciﬁcally focusing on Pd-based
+methanolsteamreforming.TheextracteddatawasusedtotrainMLmodels,
+which were designed to recommend optimal synthesis routes. Liu et al. and
+Cruse et al. carried out extensive research, training BiLSTM-CRF models
+based on transformer architectures, to extract synthesis procedures for
+solution-based inorganicmaterials29,and gold nanoparticles30.Additionally,
+ML models such as MatSciBERT31 and ChemBERT32 have been trained on
+annotated data to extract speciﬁc chemical information. These approaches
+canbelabor-intensiveandnecessitateexpertiseincoding,computerscience,
+and data science. Furthermore, they are less generalizable, requiring rede-
+sign or training when the target changes.
+LLMs have demonstrated excellent capabilities in NLP to extract
+information from literature, understand and generate chemical data.
+Jablonka et al.24 ﬁne-tuned the GPT-3 model to perform tasks such as
+molecular property prediction, reaction yield estimation, and even inverse
+molecular design through natural language question. Zheng et al.33 used
+prompt engineering techniques to guide ChatGPT in mining the scientiﬁc
+literature for the synthesis of metal-organic frameworks with information on
+metal sources, linkers, solvents, reaction temperatures, and times. Polak
+et al.34 used conversational ChatGPT to extract materials properties such as
+the critical cooling rates of metallic glasses and yield strength of high entropy
+alloys in the form of the triplet material, value, unit. Walker et al.35 proposed a
+method using GPT-3 model to extract structured multi-step seed-mediated
+growth procedures for gold nanorods from scientiﬁc text by utilizing a for-
+mulated synthetic template containing seed solution, growth solution and
+generated nanorods. Pei et al.36 demonstrated that LLMs can expedite the
+materials design process and enable the inclusion of holistic criteria in the
+domain of alloy design and manufacturing. Dagdelen et al.37 also used LLMs
+(GPT-3, Llama-2) to perform IE tasks: dopant-host systems, metal-organic
+frameworks, and general materials information. Their approach focused on
+the automatic extraction of entities such as materials, dopant-host relation-
+ships, structure components, phases, morphologies, and applications.
+Venugopal et al.38,39 constructed MatKG and MatKG-2 knowledge graphs by
+extracting information such as materials, properties, applications, and char-
+acterization methods from abstract of literature, using BERT-based approa-
+ches for MatKG and LLMs (Llama2 7B and Bloom 1B/7B) for MatKG-2.
+Previous studies have successfully leveraged LLMs or neural network models
+to extract entities and relationships. Few studies37 have addressed the com-
+prehensive extraction of material names, synthesis details, material perfor-
+mance, source metadata, and information with strong logical relationships
+from the full text of scientiﬁc literature. Existing materials science informa-
+tion extraction studies focus on structured data acquisition37,40–42, but differ
+from this work in LLM strategy, extracted information, cross-domain cap-
+ability, and output format. These distinctions highlight the novelty of our
+universal framework for inorganic catalytic materials.
+In this work, we present a method that leverages LLMs for compre-
+hensive knowledge reconstruction from materials science literature. This
+approach enables detailed analysis of each step and condition within
+Fig. 1 | Loss curves during the ﬁne-tuning process
+of LLMs. a Loss of GPT model. b Loss of Gemma
+model. c Loss of Llama model. d Loss of Phi model.
+All smoothed curves are represented in bright red.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+2
+</pre></section><section class="page"><h2>Page 3</h2><pre>synthesis routes, precisely identifying hiddencritical details and deep logical
+relationships. One-shot prompt was designed and a dataset was constructed
+with GPT-4 and human feedback, which was used to ﬁne-tune four LLMs
+(LLaMA3-8B-instruct, Gemma-7B, Phi3-mini-128k-instruct, GPT3.5-
+turbo-1106). These models were then adopted to perform large-scale IE
+tasks. The extracted information was stored in structured JSON format,
+providing a valuable resource for future research. Applying this method, the
+synthesisroutesandextractedcorrespondingperformancedataforSCRwas
+successfully reconstructed. When evaluated across ﬁve domains (Li-ion,
+HER, ORR, OER, and MSR), our ﬁne-tuned models consistently achieved
+high accuracy in capturing complex synthesis conditions and relational
+logic. This approach not only provides a scalable solution for literature-
+based knowledge reconstruction but also delivers a reusable structured
+resource for accelerated materials discovery.
+Result and discussion
+Dataset construction
+The speciﬁcs of IE tasks are presented in the Methods section. Brieﬂy, the
+synthesis tasks involve identifying products, synthesis methods, raw mate-
+rials, and synthesis steps, and additional relevant information from text.
+Each base LLM was ﬁne-tuned for task to follow a speciﬁc schema that
+deﬁnes the target entities, relevant relationships, and required format.
+Fig. 2 | Example of inputs and outputs of the ﬁne-tuned LLMs. The results of extracting information about the catalyst synthesis routes using four LLMs: GPT, Gemma,
+Llama3, and Phi3.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+3
+</pre></section><section class="page"><h2>Page 4</h2><pre>The one-shot prompt (described in Method) was designed to instruct
+GPT-4 to extract the synthesis route from the paragraph describing the
+material synthesis. Using the prompt, synthesis paragraphs were input to
+GPT-4 model, which extracted corresponding synthesis information, detail-
+ing each step, conditions, and materials involved. Three domain experts
+manually reviewed the GPT-4 generated content according to the output
+template, corrected the identiﬁed errors, and resolved discrepancies through
+discussion and negotiation to ensure annotation consistency and reliability.
+This iterative workﬂow, involving synthesis paragraph input, synthesis route
+generation, and manual review, improved prompt design with each iteration.
+With this methodology, a work-cleaned dataset capturing detailed and
+accurate material synthesis routes was created, which was used to ﬁne-tune
+LLMs. The work-cleaned dataset consists of two key components: synthesis
+paragraphs and the corresponding synthesis routes information. Each synth-
+esis paragraph describes the detailed procedures and conditions for material
+synthesis. The dataset comprises a total of 156 synthesis paragraphs, con-
+taining 1330 sentences and 35855 tokens. Additionally, the dataset includes
+156 synthesis routes, detailing raw materials, products, methods, and relevant
+information for each step, and encompasses 6337 entities. The dataset provides
+a comprehensive and structured representation of the synthesis process.
+Fig. 3 | Test performance of GPT, Gemma, Llama
+and Phi in extracting catalyst synthesis routes on
+20 Articles. The average accuracy a, precision b, re-
+call c, F1 score d of four LLMs.
+Fig. 4 | Performance of GPT, Gemma, Llama and Phi on ﬁve tasks. a The task of extracting product. b The task of extracting the raw materials in the synthesis process. c The
+task of extracting synthesis method. d The task of extracting synthesis steps. e The task of extracting the synthesis condition. f The average of the ﬁve tasks.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+4
+</pre></section><section class="page"><h2>Page 5</h2><pre>Fine-tuning performance
+The described synthetic template training dataset was used to ﬁne-tune the
+LLMs to reproduce synthetic templates in unstructured text. The para-
+metersforthefourLLMs’ﬁne-tuningprocessweredescribedinMethods.In
+this study, the Llama, Gemma, and Phi models were ﬁne-tuned using
+supervised ﬁne-tuning (SFT) with Low-Rank Adaptation (LoRA)43 tech-
+nology, which updates only the adapter weights while freezing the original
+pre-trained model parameters. The ﬁne-tuning process for each model was
+completed in ~20 min on a single NVIDIA 4090 GPU, with peak memory
+usagearound23GB.FortheGPTmodel,online ﬁne-tuningwasperformed,
+which required ~10 min without consuming local computational resources.
+The detailed procedure for the ﬁne-tuning process is provided in the Sup-
+plementary Methods. Fine-tuning improves on few-shot learning by
+trainingonmanymoreexamplesthancanﬁtintheprompt,achievingbetter
+results on a wide number of tasks. Once ﬁne-tuned, the model can generate
+responses without examples in the prompt.
+The steps and loss graph for each model, as shown in Fig.1, illustrates
+the training loss against the training steps. This graph depicts the reduction in
+loss as training progresses, with each model demonstrating a steady decline
+in loss, indicating effective learning and model improvement over the epochs.
+Fig. 5 | The different deﬁnitions of hallucinations. Blue text in the LLM’s output indicates factuality hallucination, while red text indicates faithfulness hallucination.
+Fig. 6 | Evaluation of hallucination for four LLMs. The frequency of hallucinations in GPT model a, Gemma model b, Llama model c, Phi model d. The red lines indicate
+factuality hallucination and blue lines indicate faithfulness hallucination.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+5
+</pre></section><section class="page"><h2>Page 6</h2><pre>Evaluation
+Named entity recognition (NER) task was performed using the ﬁne-tuned
+LLMs on the test datasets obtained from 20 articles and the performance of
+theﬁne-tunedmodelswasevaluated.TheDigitalObjectIdentiﬁer(DOIs)of
+20 test articles are available in Supplementary Data (Supplementary
+Table 1). An example of inputs and outputs of different ﬁne-tuned LLMs is
+showninFig.2.Theperformanceoffourmodels(GPT,Gemma,Llama,and
+Phi) was evaluated in extracting different tasks: Products, Raw Materials,
+Methods, Steps, and Conditions. The evaluation metrics included accuracy,
+precision, recall, and F1 score.
+To assess the overall performance of each model, we counted the
+average of the evaluation metrics of the 20 articles in the ﬁve tasks and
+displayed them in Fig. 3. Detailed results of the four models are shown in
+Supplementary Data (Supplementary Table 2-5). The results show that Phi
+and Gemma models ﬂuctuatesa lot, and the GPT-3.5 and Llama models are
+more stable in the test results. The GPT model performs the best in the
+extraction “step” and “condition” tasks out of the ﬁve tasks.
+The performance of the four models on ﬁve types of tasks were eval-
+uated, with results presented in Fig. 4 and detailed values in Supplementary
+Data (Supplementary Table 6). For the task of extracting “Products”, the
+Llama model demonstrated superior performance, achieving the highest
+accuracy (0.944), precision (0.971), and F1 score (0.971). In the extractionof
+“Raw Materials”, GPT performed best with an accuracy of 0.873, precision
+of 1.000, and F1 score of 0.932. For the task of extracting “Methods”, both
+the Llama and Gemma models achieved perfect scores of 1.0 for accuracy,
+precision, recall,and F1 score, demonstratingexceptional performance. The
+GPTandPhimodelsalsoperformedwell,withrecallandF1scoreexceeding
+0.9. It is noteworthy that the Gemma and Llama models achieved very
+similar performance metrics, resulting in their data markers being nearly
+overlapped in the Fig.4c.The speciﬁc valuescanbe found in Supplementary
+Table 6. In the “Steps” extraction task, GPT excelled with an accuracy of
+0.966, recall of 0.972, and F1 score of 0.983. Finally, for the “Conditions”
+category, GPT achieved the highest accuracy (0.965), recall (0.972), and
+F1score(0.981),indicatingitsrobustnessinthistask.Incomparison,thePhi
+model exhibited weaker performance on the majority of tasks. However, the
+GPT and Llama models showed relatively strong performance. Overall,
+GPT,Gemma,andLlamademonstratedimpressiveperformanceonvarious
+extraction tasks, with precision, recall, and F1 score metrics around 0.9,
+underscoring their reliability in information extraction. Baseline models
+suchasMatBERT,SciBERTand MatSciBERThaveachieved NERmicro-F1
+scores of 0.875, 0.734 and 0.861, and synthesis action retrieval scores of
+0.717,0.701 and 0.919 respectively, as reported in the MatSciNLP
+benchmark31,44. In comparison, our approach achieves a NER F1 score of
+0.962 and a synthesis action retrieval F1 score of 0.983, both of which
+signiﬁcantly outperform these baselines.
+LLMs, while exhibiting outstanding performance, suffer from hallu-
+cinations, especially on knowledge-intensive tasks. The hallucination of
+different LLMs was evaluated in the extraction of the complete synthesis
+route (comprising ﬁve tasks). The different deﬁnitions of hallucinations are
+showninFig.5.AsshowninFig.6,theresultsindicatethathallucinationsdo
+not frequently occur in the test articles. In analyzing the hallucinations of
+LLMs, the models may produce some hallucinations based on the text,
+except for those that are not explicitly described in the synthesis routes, such
+as “see supporting information” or “refer to synthesis methods of others”.
+Even whenthese illusions occur, theyare not entirely fabricated, but derived
+from textual information.
+The sequence (logic) of experimental synthesis steps (actions) plays a
+crucial role, as it can greatly affect the properties and quality of the resulting
+material. Chemical reactions involved in different steps of the synthesis
+process are strongly dependent on the operation order. Incorrect sequen-
+cing can lead to incomplete reactions or the formation of undesirable by-
+products. The physical structure and properties of the material can be sig-
+niﬁcantly inﬂuenced by the sequence of operations. The sequence of
+synthesis operations is crucial to the success of material synthesis, affecting
+everything from chemical reactions to reproducibility and safety. By
+understanding the sequence of synthesis actions, experimenters can more
+accurately replicate the process and achieve consistent material properties.
+The evaluation of the synthesis sequence provides invaluable insights for
+researchers.
+Fig. 7 | Evaluation of four LLMs on the completeness and logic of the extraction synthesis step. a GPT model. b Gemma model. c Llama model. d Phi model.
+Fig. 8 | Material property extraction. An example of input and output for extracting
+material properties from LLM.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+6
+</pre></section><section class="page"><h2>Page 7</h2><pre>The completeness and logicality of the synthesis steps of the four
+models in 20 articles were evaluated, and the results are shown in Fig.7.
+Among the four models, GPT has a signiﬁcant advantage in the com-
+pleteness of the number of synthesized actions extracted. The other three
+models exhibit incomplete extraction of steps in several articles. All four
+models perform well in the logic of the extracted steps, with all operation
+steps being presented in the correct order.
+Extraction of material properties
+The material synthesis process directly affects the microstructure of the
+material, and these microstructures determine the macroscopic properties
+of the material. Material properties can also be extracted using LLMs. One-
+shot prompt methods were employed to extract material properties such as
+activity, selectivity, and conversion of SCR catalysts. In the prompt, material
+properties, including conversion, selectivity, activity, and reaction condi-
+tions, were explicitly listed for extraction. Also, to minimize illusions, the
+model was instructed to output “not mentioned” for materials that did not
+have that property. Examples of one-shot prompts are in Supplementary
+Methods. Figure 8 shows an example of the inputs and outputs of LLM for
+extracting material properties and reaction conditions.
+Large-scale data extraction
+In our approach, the titles were extracted from the Extensible Markup
+Language (XML) nodes and then compared with a predeﬁned list of titles
+related to material synthesis, such as “catalyst preparation” and “materials
+synthesis”. To ensure robustness, the extracted titles were converted to
+lowercaseandanyleadingortrailingwhitespacewasstripped,standardizing
+the titles for comparison. Next, the list of extracted titles was iterated and
+each title was compared with the predeﬁned titles. If a match was found, the
+regular expression patterns were applied to the corresponding paragraph
+content to identify paragraphs discussing material synthesis. This process
+allowed for the effective extraction of relevant paragraphs from the litera-
+ture. From this process, 2205 articles were identiﬁed containing paragraphs
+directly related to synthesis.
+Following ﬁne-tuning, the models are not required prompts in the
+input. They can directly process synthesis-related text to produce structured
+synthesis routes. Using the ﬁne-tuned models, we performed large-scale
+extraction of synthesis information from these 2205 articles in the materials
+science literature. The models automatically generated structured synthesis
+routes and ﬂowcharts from input synthesis paragraphs. Figure 9 shows an
+example of automatic ﬂowchart generation from a paragraph45. These
+routes were processed and saved in a standardized JSON format, facilitating
+subsequent research applications and analyses. The standardized data can
+be accessed at https://github.com/Shaoruisun/LLMs-MatLitRecon.
+As a result, a total of 48925 entities were successfully extracted,
+encompassing a wide range of information critical to understanding
+material synthesis processes. These entities include 3715 product entities,
+which represent the materials or compounds synthesized; 3186 preparation
+method entities, detailing the various methodologies employed; 3011 raw
+material entities, identifying the starting materials used in synthesis; 19102
+synthesis action entities, which describe the speciﬁc steps involved in the
+synthesis processes; and 23626 preparation condition entities, outlining the
+conditions under which the synthesis was carried out, such as temperature,
+pressure, and time. The extraction of such a comprehensive set of entities
+enables a detailed and structured representation of the synthesis knowledge,
+facilitating further analysis and the potential for automation in material
+discovery and optimization.
+Models transfer
+Four LLMs, Llama, Gemma, Phi, and GPT, are ﬁne-tuned to focus on
+materials science literature in the ﬁeld of SCR. The ﬁne-tuned models are
+intended to enhance their capability in extracting complex material
+synthesis routes and related information. Subsequently, these ﬁne-tuned
+models were transferred to four other different domains, namely the HER,
+MSR, ORR, OER, and Lit-ion domains, in order to test their generalizability
+in different domains.
+In each domain, 20 articles were randomly selected from the corre-
+sponding corpus. The DOIs of the test set articles are in Supplementary
+Table 7-11. Knowledge was extracted from the literature in each of the ﬁve
+domains using the ﬁne-tuned models. Similarly, ﬁve tasks focusing on
+materials synthesis were performed: product extraction, raw material
+identiﬁcation, synthesis method identiﬁcation, extraction of synthesis steps,
+and generalization of synthesis conditions. The test results are presented in
+Fig. 10, with detailed results summarized in Supplementary Data (Supple-
+mentary Tables 12-15). As shown, the Llama, Gemma, and GPT models
+have excellent transferability, and the Phi model demonstrates slightly
+weaker performance. The results show that although different models
+perform distinctively on different domains and tasks, the ﬁne-tuned models
+generally have high cross-domain transfer capabilities and are able to adapt
+to diverse materials science tasks.
+Knowledge graph generation
+Recentadvancesinmaterialsinformaticshavedemonstratedthecriticalrole
+of ontologies and knowledge graph technology in enabling semantic,
+Fig. 9 | Catalyst synthesis and auto-generated
+structured ﬂowchart. The ﬂowchart contains pre-
+paration method, beginning with raw materials,
+followed by sequential synthesis steps with logically
+connected operations and associated reaction con-
+ditions (e.g., temperature, time, atmosphere). This
+process ultimately yields the ﬁnal product.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+7
+</pre></section><section class="page"><h2>Page 8</h2><pre>unambiguous, and interoperable data descriptions. Ontologies facilitate the
+transformation of data into machine-understandable Resource Description
+Framework (RDF) triples, enabling seamless integration of materials data
+and promoting interoperable exchange46. Knowledge is represented using
+the “subject-relation-object” structure (or triples) of “resource-property-
+value”, serving as the structural foundation for machine semantic under-
+standing. Moreover, interoperability between different knowledge graphs
+can be further enhanced by establishing mappings between semantic
+concepts47. In consideration of the FAIR principles, the extracted data are
+stored in JSON format, which is both human- and machine-readable. To
+ensure the structured and uniﬁed presentation of this information in the
+future, our work employs a structured, ontology-based template for syn-
+thetic information extraction, followed by constructing the knowledge
+graph to organize the information. The complete RDF dataset can be
+accessed at https://github.com/Shaoruisun/LLMs-MatLitRecon (“RDF
+dataset.xlsx”)
+Theknowledgegraphisastructuredrepresentationofinformationthat
+capturesrelationshipsbetweenentities,typicallythroughanetworkofnodes
+(representing entities) and edges (representing relationships). Knowledge
+graphs are widely used to organize and integrate vast amounts of complex,
+interconnected data, facilitating both human understanding and machine
+processing. By leveraging triples in the form of (h,r,t), where “h” represents
+the head entity, “r” represents the relationship, and “t” represents the tail
+entity, knowledge graphs offer a formalized way to represent information
+through logical connections. The knowledge graph consists of a total of
+26400 nodes and 55338 relationships. As illustrated in Fig. 11, the graph
+displays 1000 sets of relationships, offering a representative subset of the
+overall structure.
+The knowledge graph was constructed with a hierarchical, catalyst-
+centered logic, as illustrated in the provided Fig. 12. On the left side, the
+graph presents a top-level structure where each catalyst, such as Ce/TiO₂,
+serves as the central node. Directly connected to this node are ﬁrst-level
+entities, including raw materials used for synthesis, metadata such as lit-
+erature sources (e.g., DOI, publication title, publication date, and other
+relevant data), key performance metrics (e.g., conversion), and general
+synthesis methods. This top-level view offers a concise summary of all
+primary information associated with the catalyst, allowing users to quickly
+grasp its background, preparation technique, and main application results.
+On the right side, the graph expands into a more detailed, multi-level
+structure by decomposing the synthesis route into a series of sequential
+experimental steps. The central catalyst node is linked to a synthesis step
+node, whichaggregates all individual operations involvedin the preparation
+Fig. 10 | Performance of ﬁne-tuned LLMs across ﬁve domains. The ﬁgure com-
+pares the performance of four LLMs (Llama, Gemma, Phi3, GPT) across ﬁve
+domains: a HER, b MSR, c ORR, d OER, and e Li-ion research. Model capabilities are
+evaluated using accuracy, precision, recall, and F1 score to assess their performance
+in extracting information related to products, methods, raw materials, steps, and
+conditions.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+8
+</pre></section><section class="page"><h2>Page 9</h2><pre>process. Each of these steps—such as impregnation, dissolution, drying,
+calcination, grinding, and sieving—is represented as a separate node and is
+further annotated with associated reagents, processing conditions (such as
+temperature and time), and additional contextual or bibliographic infor-
+mation. This ﬁne-grained organization allows users to precisely track the
+ﬂow of materials and conditions throughout the entire synthesis, ensuring
+traceability and reproducibility.
+This knowledge graph not only organizes and visualizes the complex
+relationships among catalysts, synthesis steps, and experimental conditions,
+but also provides an effective platform for retrieval. Speciﬁcally, it can
+visualize catalysts connected tovarious synthesis methods, enabling users to
+query catalysts according to their preparation techniques. Each cluster
+represents a group of catalysts associated with a speciﬁc synthesis method,
+withdetailednodesillustratingtherelationshipsbetweenthesemethodsand
+the catalysts, as illustrated in Supplementary Discussion (Supplementary
+Fig. 1-8). Furthermore, this knowledge graph enables users to query speciﬁc
+preparation methods of interest, such as the wet impregnation method
+displayed in Fig. 13. Once a method is selected, users can further explore
+detailed information about the catalysts prepared. This capability allows for
+comprehensive analyses of how different synthesis strategies inﬂuence
+catalyst characteristics and overall outcomes, thereby facilitating data-
+driven research and hypothesis generation in the ﬁeld of materials science.
+The knowledge graph supports performance-based ﬁltering of cata-
+lysts. As illustrated in Fig. 14, the graph allows users to rapidly identify high-
+performing materials, such as catalysts with a conversion rate exceeding
+90%. For example, catalysts with high NOX conversion efﬁciency were
+quickly highlighted within the graph. Researchers beneﬁt greatly from this
+ability to ﬁlter catalysts based on speciﬁc performance metrics, including
+conversion rates and selectivity, which makes the search for promising
+candidates more efﬁcient. A user guide for the knowledge graph is provided,
+demonstrating examples of ﬁltering catalysts, preparation methods, raw
+materials, synthesis conditions, and performance metrics (https://github.
+com/Shaoruisun/LLMs-MatLitRecon,
+“Knowledge
+Graph
+Query
+Demo.mp4”). This guide allows for the efﬁcient use of the knowledge graph
+in research applications, facilitating seamless data exploration and analysis.
+The ability to ﬁlter and identify key aspects, such as high-performance
+catalysts or speciﬁc synthesis techniques, is intended to accelerate research
+and development processes, promoting the discovery of new materials and
+the optimization of experimental designs. Furthermore, an interactive
+demonstration of the knowledge graph is available on GitHub (https://
+github.com/Shaoruisun/LLMs-MatLitRecon), allowing users to explore
+with these functionalities.
+Conclusion
+In this study, we developed a general framework for knowledge recon-
+struction from inorganic materials science literature. This framework
+demonstrates high accuracy and strong transferability across domains. The
+ﬁne-tuned LLMs enabled precise and large-scale extraction of synthetic
+routes, performance, and metadata, creating a valuable structured dataset
+and a comprehensive knowledge graph. This work provides an effective
+method for organizing the vast amount of information in inorganic mate-
+rials science literature, offering a structured data foundation for AI-driven
+acceleration of materials development. In future research, information on
+materialmechanismsandcharacterization,aswellasmulti-modaldatasuch
+Fig. 11 | Visualization of partial synthetic entities and their relationships in the
+knowledge graph. The left panel depicts a subset of the knowledge graph, illustrating
+1000 relationships among various synthesis entities, including raw materials, cata-
+lysts, process steps, temperature, and time. Nodes (colored circles) denote entities,
+while edges represent relational connections between them. The right panel provides
+the categorical classiﬁcation legend, with numeric labels indicating the entity count
+per category.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+9
+</pre></section><section class="page"><h2>Page 10</h2><pre>Fig. 12 | Example of a catalyst synthesis entities and relationships in
+knowledge graph. The left side shows the ﬁrst-level nodes directly connected to the
+catalyst (Ce/TiO2), including raw materials, synthesis steps, performance data (NH3
+conversion, N2 yield), and metadata. The right side expands to show the second-level
+nodes, which detail further information such as preparation methods (e.g., wet
+impregnation), additional materials, and synthesis steps.
+Fig. 13 | Knowledge graph of wet impregnation-based catalyst synthesis. The ﬁgure displays catalysts prepared using the wet impregnation method as the central node. It
+also shows connections to metadata, raw materials, and synthesis steps, allowing for detailed exploration of catalyst preparation and performance.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+10
+</pre></section><section class="page"><h2>Page 11</h2><pre>as images and spectra, can be systematically extracted and integrated. The
+knowledge graph can be further enriched with such information. This work
+could provide a foundation for data-driven materials discovery and design,
+promoting more efﬁcient development of advanced materials.
+Methods
+Overall Procedure
+Adiagramoutliningthe generalprocessforproducingthe ﬁne-tuned model
+formaterialsynthesisrouteisshowninFig.15.Intheinitialstage,aone-shot
+prompt, containing synthesis paragraphs and output styles, was designed as
+anexampleofpromptlearningfortheGPT-4model.Theseextractedresults
+were correctedand usedas an initial training set for ﬁne-tuning LLMs in the
+second stage. The third stage was an iterative training process. In this stage,
+new data were predicted, corrected, and added to the training set to update
+the ﬁne-tuned model, thus improving its performance with each iteration.
+All input texts at each stage were selected from paragraphs that describe the
+material synthesis process, which were ﬁltered from the original corpus.
+Finally, we employed ﬁne-tuned LLMs to extract synthesis routes, and
+constructed a comprehensive ﬂowcharts and knowledge graphs to illustrate
+the material synthesis process based on the synthesis routes. The extracted
+synthesis route from articles were presented as a JSON ﬁle containing. The
+extracted synthesis route data is publicly available at https://github.com/
+Shaoruisun/LLMs-MatLitRecon (“Fine-tuning data set.jsonl”). The appli-
+cation of LLMs in extracting and visualizing synthesis routes signiﬁcantly
+enhances the accessibility and comprehensibility of material synthesis data,
+providing valuable insights for further research and development in this
+domain.
+Datasets
+The ﬁrst stage aims to acquire a corpus of articles relevant to the topic. The
+relevant articles for constructing the training and testing datasets of this
+model were collected from the Elsevier database, under text and data-
+mining agreements. Several reasons make these journal articles particularly
+suitable for NLP workﬂows48. These articles can be downloaded and stored
+locally; they are digitized rather than scanned, at least when they are recent
+enough, so they can be processed without errors that might arise from
+having to convert images to text; they can be tracked via DOIs, so the data
+extracted from them can be referenced. Elsevier articles were downloaded
+via the ScienceDirect Search Application Programming Interface (API),
+which is provided by Elsevier for text and data mining purposes. We con-
+structed text mining programs to identify and extract articles containing
+SCR syntheses. First, we repeatedly submitted the query text for “selective
+catalytic reduction” in the search bar of the Elsevier homepage via a Python
+web-scraping tool and recorded the responses on each page. Then, we
+extracted the metadata of the articles from the responses, including titles,
+author names, URL links, and DOI information. If a DOI or URL was
+provided, it was used to access the content of the relevant articles. Based on
+the extracted DOIs or URLs, the content of the article in XML format was
+further retrieved from the Elsevier server. Given that articles prior to 2000
+were presented in PDF format, we limited the publication years to
+2000−2023 when requesting articles from Elsevier, and downloaded a total
+of 12136 articles. The corpus contained 2305 articles with information on
+catalyst preparation paragraph. From these, 156 paragraph were selected for
+work-cleaned dataset construction based on two criteria: achieving a
+balanced distribution across publication years and ensuring a diverse
+representation of preparation methods.
+To ensure high relevance to the research topic, articles containing
+speciﬁc keywords in their titles were retrieved using the same approach,
+which automatically downloaded literature from ﬁve additional categories
+related to the study. This process covered the period from 2000 to 2023,
+resulting in the creation of a comprehensive corpus of inorganic materials
+science literature. Speciﬁcally, 3009 papers on HER, 2401 on OER, 3460 on
+ORR, 428 on MSR, and 4052 on Li-ion batteries were downloaded. We
+developed an automated method using regular expressions to extract para-
+graphs discussing “preparation catalysts”, “preparation materials”, “synthesis
+catalysts”, and “synthesis materials” from a large corpus of XML literature.
+Fig. 14 | Knowledge graph ﬁltering for high-performance catalysts. Filtered
+knowledge graph showing catalysts with conversion rates exceeding 90%. Brown
+nodes represent catalyst names, while gray nodes indicate associated conversion
+rates and reaction conditions.Magniﬁed view of alocal subgraphillustrating detailed
+node-speciﬁc information.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+11
+</pre></section><section class="page"><h2>Page 12</h2><pre>The Output template of GPT-4
+In recent years, the management and sharing of research data have
+become increasingly important in the materials science community. The
+FAIR principles have been widely recognized as fundamental guidelines
+for making research data more valuable and usable49,50. Applying these
+principles to materials synthesis information is critical to enable efﬁcient
+data reuse, facilitate automated data integration, and accelerate data-
+driven material discovery. However, synthesis procedures are often
+reported in unstructured and inconsistent formats, limiting their acces-
+sibility and reusability. Following these principles, we introduced a
+structured template for inorganic materials synthesis routes, using a
+machine-readable JSON format. This approach ensures compatibility
+with the FAIR principles and promotes standardized data sharing within
+the community.
+The structure and content of the synthesis are shown in Fig. 16. The
+synthesis routes are stored as JSON documents, which contain ﬁve com-
+ponents: products, synthesis methods, raw materials, synthesis steps, and
+corresponding synthesis conditions. The products include the name and
+denotation of the catalyst. All raw materials, including supports, reagents,
+solvents, etc., and their associated volumes (vol), concentrations (con),
+ratios, and/or masses were documented. All synthetic actions related to the
+synthesis steps were recorded in the precise order they were performed
+during the experimental synthesis. Additionally, the conditions associated
+with each synthetic action were noted, including temperature, time, pH,
+reagents, equipment, and atmospheric environment.
+The documents follow a standardized format,with the exception of the
+synthesis steps, which differ depending on the speciﬁc requirements of each
+study. Unlike other sections, the synthesis steps are not predeﬁned; instead,
+they are customized to accurately reﬂect the unique experimental proce-
+dures of each individual work. This approach ensures that the synthesis
+process is thoroughly documented, capturing all relevant details and var-
+iations that are critical for replicating and understanding the synthetic
+outcomes.
+The prompt template for GPT-4
+LLMs have the potential to extract additional or missed words, which
+presents several challenges for information extraction tasks. To address
+these challenges systematically, several potential measures can be con-
+sidered. First, clarifying entity deﬁnitions and incorporating manual
+annotation review processes can help ensure extraction quality. Second,
+collectingstandardterms,abbreviations,andentityvariantsfromtheﬁeldto
+build a structured vocabulary—such as a domain dictionary or knowledge
+graph—can enhance domain knowledge and support better contextual
+modeling. Third, automatic prompt generation algorithms could be adop-
+ted, which dynamically create guiding prompts based on the input
+text, reducing reliance on ﬁxed templates. Fourth, for low-frequency terms,
+Fig. 15 | Workﬂow for information extraction
+using LLMs. This workﬂow covers literature
+crawling, one-shot prompting for data extraction,
+dataset construction, LLM ﬁne-tuning, and knowl-
+edge graph generation from reconstructed literature.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+12
+</pre></section><section class="page"><h2>Page 13</h2><pre>few-shot learning approaches may be used where explicit prompt rules help
+guide entity extraction. Fifth, establishing domain-speciﬁc rules (such as
+regularexpressionmatchingorentitytype constraints) canfurtherﬁlterand
+validate model outputs. These measures offer potential solutions for sys-
+tematically overcoming the challenges related to extracting additional or
+missed entities with LLMs. In our work, we combined prompt-based
+method with human feedback to construct a domain-speciﬁc dataset,
+injecting domain knowledge into LLM and improving the information
+extraction capabilities.
+The prompt template for GPT-4 consists of four main sections: role
+deﬁnition, task speciﬁcation, input designation and output designation. It is
+designed as follows:
+RoleDeﬁnition:RoledeﬁnitionisusedtodeﬁnetherolethattheGPT-4
+will play during the task and to set the context of the task.
+For instance, GPT-4 is instructed to act as a scientiﬁc analyst, “Assume
+you are a chemical engineer specializing in the extraction of information
+from materials synthesis paragraphs.”. This role determines the perspective
+and expertise employed by the model when processing tasks.
+TaskSpeciﬁcation:Atthisstage,thetaskswillbedescribedindetail.For
+the purpose of extracting materials synthesis route, this section clariﬁes the
+objective, such as identifying and summarizing the steps involved in the
+synthesis process, including the raw materials, methods, conditions and
+reagents used. This ensures that the model understands the scope and focus
+of the extraction task. We designed a total of four tasks:
+1. Please output the synthesis information for the material basedon the
+following paragraph, including the product name, preparation method, raw
+materials, and all steps.
+2. The steps are operational actions, such as addition, stirring, mixing,
+dissolving, transferring, heating, drying, calcining, reducing, activating, and
+other similar operations.
+3. Output each operation in order, and the conditions associated with
+each operation, such as temperature, time, reagents, equipment and
+instruments, atmosphere, etc.
+4. Please extract the synthesis information separately and output it in
+dictionary format.
+Input template: The input consists of paragraphs detailing the synthesis
+of materials. To illustrate, an example synthesis paragraph is provided within
+the prompt template. This paragraph was selected because it contains a
+comprehensive synthesis procedure with detailed descriptions of each step.
+Output template: In the prompt, the output is the synthesis routes
+extracted from the input paragraphs, following the predeﬁned template. At
+ﬁrst, the example synthesis routes will be formatted according to the preset
+template and presented the required information. Subsequently, the pre-trained
+model will autonomously generate synthesis routes based on new input pas-
+sages according to the same structural format. The one-shot prompt is shown
+in Fig. 17, and the full information is provided in Supplementary Methods.
+LLMs
+In this study, we ﬁne-tuned several models downloaded from Hugging face
+using the LLaMA-Factory framework. To conserve computational resour-
+ces, we opted for smaller parameter versions of each LLM. The models
+included Gemma (Google), Llama (Meta), and Phi (Microsoft). Addition-
+ally, we utilized an online GPT model provided by OpenAI. A detailed
+description and hyperparameters of each model are given below.
+The comprehensive overview is provided of three open-source LLMs:
+Gemma, Llama, and Phi. Each model is designed to cater to various com-
+putational needs that enhance their performance on consumer-grade
+hardware.
+Gemma is a series of lightweight, state-of-the-art open models from
+Google, with two versions (2B and 7B). Each version includes a pre-trained
+foundational model and an instruction-optimized model, and is capable of
+running on consumer-grade hardware without data quantization for up to
+8 K tokens. We utilized the 7B parameters pre-trained foundational version.
+Meta’s Llama 3, the latest in the Llama series, offers 8B and 70B ver-
+sions. Each version has a base model and an instruction-tuned model. We
+usethe8Bparameterinstruction-tunedversion(LLaMA3-8B-instruct)with
+a context length of 8 K tokens.
+Phi-3 is a series of open AI models by Microsoft. We ﬁne-tuned the
+Phi-3-mini model, a language model with 3.8 billion parameters and a
+context length of 128k tokens.
+All three models were ﬁne-tuned using the LLaMA-Factory framework
+with the LoRA method. The ﬁne-tuning process parameters involved setting
+the training batch size to 1, gradient accumulation steps to 8, learning rate to
+3.0e-5, number of training epochs to 24, logging steps to 1, and save steps to 50.
+For the GPT model, we utilized the GPT-3.5-turbo-1106 from OpenAI.
+The hyperparameters for ﬁne-tuning this model are different from those used
+for the Hugging face models. The batch size was set to 1, with a learning rate
+multiplier of 1, within the recommended range of 0.1 to 10, and the model
+was ﬁne-tuned over 3 epochs. These parameters were chosen to ensure
+optimal performance and efﬁcient training for the GPT-3.5-turbo model.
+Evaluate method
+TheperformanceoftheLLMswereevaluatedonthebasisofprecision,recall
+and F1 score. Precision is the fractionof correct (relevant) records among all
+extracted records; recall is the fraction of successfully extracted records
+Fig. 16 | Schematic representation of the JSON template structure for inorganic
+material synthesis routes. It encompasses product details (name, denoted), raw
+materials (support, precursor, reagent, solution), synthesis methods (impregnation,
+co-precipitation, etc.), synthesis actions (add, mix, stir, dissolve, dry, transfer, cal-
+cine, grind, etc.), and synthesis conditions (temperature, time, atmosphere, equip-
+ment, reagent, pH).
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+13
+</pre></section><section class="page"><h2>Page 14</h2><pre>among all correct (relevant) records in the articles; and F1 score is the
+harmonic mean of precision and recall, deﬁned as
+accuracy ¼
+TP þ TN
+FP þ FN þ TP þ TN
+precision ¼
+TP
+TP þ FP
+recall ¼
+TP
+TP þ FN
+F1score ¼ 2 PrecisionRecall
+Precision þ Recall
+where TP is the true positive count (the number of records that are correctly
+extracted), FP is the false positive count (the number of records that are
+Fig. 17 | One-shot prompt learning designed for GPT-4 to construct a work-
+cleaned dataset. This ﬁgure shows a GPT-4 prompt demo. It includes a request for
+extracting material synthesis information (covering product name, method, raw
+materials, steps with operations and conditions), and the dictionary - format output
+of extracted synthesis details for catalysts.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+14
+</pre></section><section class="page"><h2>Page 15</h2><pre>incorrectly extracted), and FN is the false negative count (the number of
+correctrecordsthatarenotextracted).TheirdeﬁnitionsareshowninFig.18.
+Data availability
+All data generated or analyzed during this study are included in this pub-
+lished article and its supplementary information ﬁles. The structured
+datasets supporting the ﬁndings—including the corpus information, ﬁne-
+tuning data, the structured data, knowledge graph triples and the code—are
+publicly available in the GitHub repository at https://github.com/
+Shaoruisun/LLMs-MatLitRecon. Any other relevant data are available
+from the corresponding author Shaorui Sun, email: sunsr@bjut.edu.cn, on
+reasonable request.
+Code availability
+The custom code used to process, and analyze the data in this study is
+publicly available in the GitHub repository at https://github.com/
+Shaoruisun/LLMs-MatLitRecon. No restrictions apply to access the code.
+Received: 25 November 2024; Accepted: 9 December 2025;
+References
+1.
+Bai, X. &amp; Zhang, X. Artiﬁcial intelligence-powered materials science.
+Nano Micro Lett 17, 135 (2025).
+2.
+Elbaz, Y., Furman, D. &amp; Toroker, M. C. Modeling diffusion in functional
+materials: from density functional theory to artiﬁcial intelligence. Adv.
+Funct. Mater. 30, 19007789 (2020).
+3.
+Ryu, B., Wang, L., Pu, H., Chan, M. K. Y. &amp; Chen, J. Understanding,
+discovery, and synthesis of 2D materials enabled by machine
+learning. Chem. Soc. Rev. 51, 1899–1925 (2022).
+4.
+Agrawal, A. &amp; Choudhary, A. Perspective: Materials informatics and
+big data: realization of the “fourth paradigm” of science in materials
+science. APL Mater 4, 053208 (2016).
+5.
+Jose, R. &amp; Ramakrishna, S. Materials 4.0: Materials big data enabled
+materials discovery. Appl. Mater. Today 10, 127–132 (2018).
+6.
+Bonke, S. A. et al. Multi-variable multi-metric optimization of self-
+assembled photocatalytic CO2 reduction performance using machine
+learning algorithms. J. Am. Chem. Soc. 146, 15648–15658 (2024).
+7.
+Xing, M., Zhang, Y., Li, S., He, H. &amp; Sun, S. Prediction of carbon
+dioxide reduction catalyst using machine learning with a few-feature
+model: WLEDZ. J. Phys. Chem. C 126, 17025–17035 (2022).
+8.
+Fang, Z. et al. The DFT and machine learning method accelerated the
+discovery of DMSCs with high ORR and OER catalytic activities. J.
+Phys. Chem. Lett. 15, 281–289 (2024).
+9.
+Wang, Y. et al. Exploring the ambient-temperature degradation
+reactions of pet through two-step machine learning and high-
+throughput experimentation. ACS Sustainable Chem. Eng 12,
+5415–5426 (2024).
+10. Li, S. et al. Predicting metal-organic frameworks as catalysts to ﬁx
+carbon dioxide to cyclic carbonate by machine learning. J.
+Materiomics 7, 1029–1038 (2021).
+11. Yan, C. et al. Multi-perspective interpretation for one-dimensional
+conventional neural network model to identify iron-bearing waste
+material. J. Environ. Chem. Eng. 12, 112580 (2024).
+Fig. 18 | Evaluation methods for model outputs.
+Schematic illustration of deﬁning evaluation metrics
+(True Positive (TP), False Negative (FN), False
+Positive (FP), True Negative (TN)) by comparing
+predicted and true catalyst synthesis information.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+15
+</pre></section><section class="page"><h2>Page 16</h2><pre>12. Zhang, Y. et al. Universal approach to de novo drug design for target
+proteins using deep reinforcement learning. ACS Omega 8,
+5464–5474 (2023).
+13. Meng, K. et al. BNM-CDGNN: Batch normalization multilayer
+perceptron crystal distance graph neural network for excellent-
+performance crystal property prediction. J. Chem. Inf. Model. 63,
+6043–6052 (2023).
+14. Zhang, X. et al. Ab initio design of Ni-Rich cathode material with
+assistance of machine learning for high energy lithium-ion batteries.
+Energy Environ. Mater. 7, e12744 (2024).
+15. Wang, Z., Wang, L., Zhang, H., Xu, H. &amp; He, X. Materials descriptors of
+machine learning to boost development of lithium-ion batteries. Nano
+Convergence 11, 8 (2024).
+16. Du, R. et al. Machine learning: an accelerator for the exploration and
+application of advanced metal-organic frameworks. Chem. Eng.
+Journal 490, 151828 (2024).
+17. Lin, J. et al. Machine learning accelerates the investigation of targeted
+MOFs: performance prediction, rational design and intelligent
+synthesis. Nano Today 49, 101802 (2023).
+18. Meuwly, M. Machine learning for chemical reactions. Chem. Rev. 121,
+10218–10239 (2021).
+19. Gao, L., Lin, J., Wang, L. &amp; Du, L. Machine learning-assisted design of
+advanced polymeric materials. Account. Mater. Res. 5, 571–584
+(2024).
+20. Zhu, L., Zhou, J. &amp; Sun, Z. Materials data toward machine learning:
+advances and challenges. J. Phys. Chem. Lett. 13, 3965–3977 (2022).
+21. Xu, P., Ji, X., Li, M. &amp; Lu, W. Small data machine learning in materials
+science. npj Comput. Mater. 9, 42 (2023).
+22. Stracke, K. &amp; Evans, J. D. The rise of data repositories in materials
+chemistry. Commun. Chem. 7, 1–4 (2024).
+23. Li, S. et al. Extracting the synthetic route of pd-based catalysts in
+methanol steam reforming from the scientiﬁc literature. J. Chem. Inf.
+Model. 63, 6249–6260 (2023).
+24. Jablonka, K. M., Schwaller, P., Ortega-Guerrero, A. &amp; Smit, B.
+Leveraging large language models for predictive chemistry. Nat.
+Mach. Intell. 6, 161–169 (2024).
+25. Xiao, Z. et al. Generative artiﬁcial intelligence GPT-4 accelerates
+knowledge mining and machine learning for synthetic biology. ACS
+Synth. Biol. 12, 2973–2982 (2023).
+26. Choi, J. &amp; Lee, B. Quantitative topic analysis of materials science
+literature using natural language processing. ACS Appl. Mater.
+Interfaces 16, 1957–1968 (2024).
+27. Bayerlein, B. et al. Natural language processing-driven microscopy
+ontology development. Integr. Mater. Manuf. Innov. 13, 915–926
+(2024).
+28. Liu, Y. et al. Domain knowledge discovery from abstracts of scientiﬁc
+literature on Nickel-based single crystal superalloys. Sci. China
+Technol. Sci. 66, 1815–1830 (2023).
+29. Wang, Z. et al. Dataset of solution-based inorganic materials
+synthesis procedures extracted from the scientiﬁc literature. Sci. Data
+9, 231 (2022).
+30. Cruse, K. et al. Text-mined dataset of gold nanoparticle synthesis
+procedures, morphologies, and size entities. Sci. Data 9, 234
+(2022).
+31. Gupta, T., Zaki, M., Krishnan, N. M. A. &amp; Mausam MatSciBERT: A
+materials domain language model for text mining and information
+extraction. npj Comput. Mater. 8, 102 (2022).
+32. Guo, J. et al. Automated chemical reaction extraction from scientiﬁc
+literature. J. Chem. Inf. Model. 62, 2035–2045 (2022).
+33. Zheng, Z., Zhang, O., Borgs, C., Chayes, J. T. &amp; Yaghi, O. M. ChatGPT
+chemistry assistant for text mining and the prediction of MOF
+synthesis. J. Am. Chem. Soc. 145, 18048–18062 (2023).
+34. Polak, M. P. &amp; Morgan, D. Extracting accurate materials data from
+research papers with conversational language models and prompt
+engineering. Nat. Commun. 15, 1569 (2024).
+35. Walker, N. et al. Extracting structured seed-mediated gold nanorod
+growth procedures from scientiﬁc text with LLMs. Digit. Discov. 2,
+1768–1782 (2023).
+36. Pei, Z., Yin, J., Neugebauer, J. &amp; Jain, A. Towards the holistic design of
+alloys with large language models. Nat. Rev. Mater. 9, 840–841 (2024).
+37. Dagdelen, J. et al. Structured information extraction from scientiﬁc
+text with large language models. Nat. Commun. 15, 1418 (2024).
+38. Venugopal, V. &amp; Olivetti, E. MatKG: An autonomously generated
+knowledge graph in material science. Sci. Data 11, 217 (2024).
+39. Venugopal, V. &amp; Olivetti, E. MatKG-2: Unveiling Precise Material
+Science Ontology Through Autonomous Committees of LLMs.
+NeurIPS, (2023).
+40. Baibakova, V. et al. Precursor reaction pathway leading to BiFeO3
+formation: Insights from text-mining and chemical reaction network
+analyses. Digit. Discov. 4, 1602–1611 (2025).
+41. Lee, S., Cruse, K., Baibakova, V., Ceder, G. &amp; Jain, A. Text-mined
+dataset of solid-state syntheses with impurity phases using large
+language model. Sci. Data 12, 1969 (2025).
+42. Lee, S. et al. Data-driven analysis of text-mined seed-mediated
+syntheses of gold nanoparticles. Digit. Discov 4, 93–104 (2025).
+43. Hu E. J. et al. Lora: Low-rank adaptation of large language models.
+ICLR 3, (2022).
+44. Song, Y., Miret, S. &amp; Liu, B. MatSci-NLP: evaluating scientiﬁc
+language models on materials science language tasks using text-to-
+schema modeling. in Proceedings of the 61st Annual Meeting of the
+Association for Computational Linguistics (1: Long Papers) (eds
+Rogers, A., Boyd-Graber, J. &amp; Okazaki, N.) 3621–3639 (Association
+for Computational Linguistics, Toronto, Canada, 2023).
+45. Qiao, T. et al. MnOx location on MnOx-ZSM-5 to inﬂuence the
+catalytic activity for selective catalytic reduction of NOx by NH3. Appl.
+Catal. A: Gen.l 617, 118128 (2021).
+46. Bayerlein, B. et al. PMD core ontology: achieving semantic
+interoperability in materials science. Mater. Design 237, 112603
+(2024).
+47. Ghafarollahi, A. &amp; Buehler, M. J. SciAgents: Automating scientiﬁc
+discoverythroughbioinspiredmulti-agent intelligent graph reasoning.
+Adv. Mater. 37, 2413523 (2025).
+48. Dong, Q. &amp; Cole, J. M. Auto-generated database of semiconductor
+band gaps using ChemDataExtractor. Sci Data 9, 193 (2022).
+49. Wilkinson, M. D. et al. The FAIR guiding principles for scientiﬁc data
+management and stewardship. Sci. Data 3, 160018 (2016).
+50. Schefﬂer, M. et al. FAIR data enabling new horizons for materials
+research. Nature 604, 635–642 (2022).
+Acknowledgements
+This work was supported by the National Key Research &amp; Development
+Program of China (grant no. 2021YFA1201000), the National Natural
+Science Foundation of China (22035009) and National Engineering
+Laboratory for Mobile Source Emission Control Technology
+(NELMS2019A04).
+Author contributions
+S.L. contributed the research design, developed the computational
+framework, conducted experiments, analyzed results, and wrote the initial
+manuscript. S.W. assisted in ﬁne-tuning the models and processed data.
+C.H. contributed to statistical analysis and data validation. Y.Z. participated
+in data validation and reviewed the manuscript. G.Z. contributed to manu-
+script revision, co-supervising the research process. S.S. supervised the
+project, provided critical resources, and acquired funding. S.S. also con-
+tributed to manuscript revision and overall research coordination.
+Competing interests
+Theauthorsdeclarethattheyhavenoknowncompetingﬁnancialinterestsor
+personal relationships that could have appeared to inﬂuence the work
+reported in this paper.
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+16
+</pre></section><section class="page"><h2>Page 17</h2><pre>Additional information
+Supplementary information The online version contains
+supplementary material available at
+https://doi.org/10.1038/s43246-025-01043-3.
+Correspondence and requests for materials should be addressed to
+Guizhen Zhang or Shaorui Sun.
+Peer review information Communications Materials thanks the
+anonymous reviewers for their contribution to the peer review of this work. A
+peer review ﬁle is available.
+Reprints and permissions information is available at
+http://www.nature.com/reprints
+Publisher’s note Springer Nature remains neutral with regard to
+jurisdictional claims in published maps and institutional afﬁliations.
+Open Access This article is licensed under a Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License,
+which permits any non-commercial use, sharing, distribution and
+reproduction in any medium or format, as long as you give appropriate
+credit to the original author(s) and the source, provide a link to the Creative
+Commons licence, and indicate if you modiﬁed the licensed material. You
+do not have permission under this licence to share adapted material
+derived from this article or parts of it. The images or other third party
+material in this article are included in the article’s Creative Commons
+licence, unless indicated otherwise in a credit line to the material. If material
+isnot includedin thearticle’s CreativeCommons licenceandyour intended
+use is not permitted by statutory regulation or exceeds the permitted use,
+you will need to obtain permission directly from the copyright holder. To
+view a copy of this licence, visit http://creativecommons.org/licenses/by-
+nc-nd/4.0/.
+© The Author(s) 2026
+https://doi.org/10.1038/s43246-025-01043-3
+Article
+Communications Materials | (2026) 7:31 
+17
+</pre></section></main></body></html>
